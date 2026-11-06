@@ -13,9 +13,9 @@ mkdir -p "$LOG_DIR"
 
 # expected-skill|prompt
 CASES=(
-  "aws-intent|I want to build a webhook that receives payment events and lets our support team search them. Help me figure out what to build on AWS. Do not write code yet."
+  "aws-intent|I want to build a small service that receives webhook events from a partner and lets our team search them. Help me figure out what to build on AWS. Do not write code yet."
   "aws-orr|We are about to launch our checkout API to production next week. Are we operationally ready? Tell me what you would check."
-  "aws-maintain|Our order-processing service on AWS started throwing 5xx errors an hour ago. Help us triage it."
+  "aws-maintain|Our image-processing service on AWS started throwing 5xx errors an hour ago. Help us triage it."
 )
 
 pass=0; fail=0

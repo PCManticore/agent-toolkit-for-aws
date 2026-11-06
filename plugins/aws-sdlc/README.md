@@ -49,12 +49,12 @@ loaded on demand from the AWS MCP Server with `retrieve_skill`. Full run sheet: 
 
 | Phase | Prompt |
 |---|---|
-| intent | *I want to build the order workflow for our coffee shop app. When a customer orders, we validate the order, charge their card, wait for the barista to accept it (up to 10 minutes, otherwise refund), then notify the customer. A customer must never be charged twice. Python, us-west-2, under $20/month.* |
-| build | *Build it. CDK in TypeScript, Python function code, stack SdlcDemoOrders, tag project=sdlc-demo, nothing retained on delete. Add unit tests; don't deploy yet.* |
-| verify | *Verify it before we ship. Deploy a dev copy and run an accepted order and a refunded order end to end.* |
-| orr | *We roll this out to all our stores next week. Are we operationally ready?* |
-| deploy | *Ship it to production as stack SdlcDemoOrders.* (refused while the ORR is blocked) |
-| maintain | *Some orders have been stuck for an hour and two customers say they were charged twice. Triage it.* |
+| intent | *I want to build a photo wall for our team. Someone uploads a photo, we make a thumbnail, have AI write a caption, then wait up to 10 minutes for a moderator to approve it, otherwise reject it. Approved photos are posted and the team is notified once. Python, us-west-2, under $10/month.* |
+| build | *Build it. CDK in TypeScript, Python function code, stack SdlcDemoPhotos, tag project=sdlc-demo, nothing retained on delete. Add unit tests; don't deploy yet.* |
+| verify | *Verify it before we ship. Deploy a dev copy and run an approved upload and a rejected upload end to end.* |
+| orr | *We open this to the whole team next week. Are we operationally ready?* |
+| deploy | *Ship it to production as stack SdlcDemoPhotos.* (refused while the ORR is blocked) |
+| maintain | *Some photos have been waiting for an hour and people say the same photo was announced twice. Triage it.* |
 
 Plain Claude Code without the demo workspace: `claude --plugin-dir plugins/aws-sdlc`, or
 `/plugin marketplace add PCManticore/agent-toolkit-for-aws` then `/plugin install aws-sdlc@agent-toolkit-for-aws`.

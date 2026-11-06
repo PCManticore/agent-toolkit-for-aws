@@ -3,8 +3,8 @@
 A 5–8 minute live demo. One agent session takes a new workload from an idea to production by walking
 the SDLC phases: **intent → build → verify → ORR → deploy → maintain**. Two ready-made flows:
 
-- **Flow A (main): a coffee-shop order workflow on Lambda Durable Functions.** Multi-step, retries,
-  a 10-minute wait for the barista, and a hard "never charge twice" rule.
+- **Flow A (main): a team photo wall on Lambda Durable Functions.** Multi-step, retries, a 10-minute
+  wait for a moderator, and a hard "never post or announce twice" rule.
 - **Flow B (alternative): Pulse, a live Q&A board for events on Lambda Web Functions** (launched
   October 2026). The audience votes from their phones while the projector re-ranks questions live.
 
@@ -44,18 +44,18 @@ cd /path/to/demo-run
 
 Every prompt below is also a slash command in both agents. Type `/demo-1-intent` instead of pasting.
 
-## Flow A: coffee orders on Lambda Durable Functions
+## Flow A: team photo wall on Lambda Durable Functions
 
 | # | Say | Type (slash command and prompt) | Expect |
 |---|---|---|---|
 | 0 | "Seven skills, one per phase." | `/demo-0-start`: *I want to build something new on AWS. Where do I start, and what does the lifecycle look like?* | `aws-sdlc` shows the lifecycle map and points to intent |
-| 1 | "I describe the problem. I don't name a service." | `/demo-1-intent`: *I want to build the order workflow for our coffee shop app. When a customer orders, we validate the order, charge their card through our payment provider, wait for the barista to accept it (up to 10 minutes, otherwise refund the customer), then notify the customer and add loyalty points. Any step can fail and retry, but a customer must never be charged twice. About 2,000 orders a day with a lunch peak, Python team, us-west-2, budget under $20/month. Pick the recommendation yourself; I accept it.* | `aws-intent` pulls `aws-serverless` from the MCP server, compares **Durable Functions** with Step Functions, and recommends one with reasons. `intent.md` has requirements, options, cost and doc sources |
-| 2 | "Now it pulls the skill for the service it picked." | `/demo-2-build`: *Build it. Use CDK in TypeScript for the infrastructure and Python for the function code, stack name SdlcDemoOrders, tag every resource project=sdlc-demo, and nothing retained on delete. Fake the payment provider and the barista so a test event controls whether payment succeeds and whether the barista accepts. Add unit tests, make sure the stack synthesizes, and don't deploy yet.* | `aws-build` retrieves `aws-lambda-durable-functions`, writes the handler with steps and a wait, an idempotency key on the charge, CDK and tests. Writes `build.md` |
-| 3 | "Verify is evidence, not opinion." | `/demo-3-verify`: *Verify it before we ship. Deploy a dev copy as stack SdlcDemoOrders-dev in us-west-2 and run two orders end to end: one the barista accepts, and one the barista never accepts so it refunds. Show me where each execution checkpointed.* | PASS/FAIL/SKIPPED per check with the command that proved it. Execution history shows completed steps and the wait |
-| 4 | "Would you put this in every store?" | `/demo-4-orr`: *We roll this out to all our stores next week. Are we operationally ready? Check the dev stack read-only. Owner is the orders team; on-call is their pager rotation; there are no runbooks yet.* | `aws-orr` checks the account read-only through `run_script`. Expect RED items such as no alarms or runbooks, so `orr.md` is `blocked` |
-| 5 | "Watch the gate." | `/demo-5-deploy`: *Ship it to production as stack SdlcDemoOrders.* | `aws-deploy` refuses: the ORR is blocked |
-| 5b | "Fix, review again, ship." | `/demo-5b-fix-and-deploy`: *Fix the RED items from the ORR, re-run the ORR, and if it passes deploy to production as stack SdlcDemoOrders with a rollback plan.* | Alarms and runbooks added, ORR passes, change set previewed, deploy, smoke check, `deploy-record.md` |
-| 6 | "Day 2." | `/demo-6-maintain`: *Some orders have been stuck for an hour and two customers say they were charged twice. Triage it.* | `aws-maintain` reads metrics, logs and execution history through the MCP server, checks the waits and the idempotency key, proposes a fix and logs it in `maintain-log.md` |
+| 1 | "I describe the problem. I don't name a service." | `/demo-1-intent`: *I want to build a photo wall for our team. Someone uploads a photo, we make a thumbnail, have AI write a short caption, then wait for a moderator to approve it (up to 10 minutes, otherwise it is rejected and the uploader is told). Approved photos go on the wall and the team gets one notification. Any step can fail and retry, but a photo must never be posted twice or announced twice. About 200 photos a day, Python team, us-west-2, budget under $10/month. Pick the recommendation yourself; I accept it.* | `aws-intent` pulls `aws-serverless` from the MCP server, compares **Durable Functions** with Step Functions, and recommends one with reasons. `intent.md` has requirements, options, cost and doc sources |
+| 2 | "Now it pulls the skill for the service it picked." | `/demo-2-build`: *Build it. Use CDK in TypeScript for the infrastructure and Python for the function code, stack name SdlcDemoPhotos, tag every resource project=sdlc-demo, and nothing retained on delete. Fake the moderator so a test event controls whether the photo is approved. Add unit tests, make sure the stack synthesizes, and don't deploy yet.* | `aws-build` retrieves `aws-lambda-durable-functions`, writes the handler with steps and a wait, an idempotency key on the post and the notification, CDK and tests. Writes `build.md` |
+| 3 | "Verify is evidence, not opinion." | `/demo-3-verify`: *Verify it before we ship. Deploy a dev copy as stack SdlcDemoPhotos-dev in us-west-2 and run two uploads end to end: one the moderator approves, and one nobody approves so it is rejected. Show me where each execution checkpointed.* | PASS/FAIL/SKIPPED per check with the command that proved it. Execution history shows completed steps and the wait |
+| 4 | "Would you open this to everyone?" | `/demo-4-orr`: *We open this to the whole team next week. Are we operationally ready? Check the dev stack read-only. Owner is the platform team; on-call is their pager rotation; there are no runbooks yet.* | `aws-orr` checks the account read-only through `run_script`. Expect RED items such as no alarms or runbooks, so `orr.md` is `blocked` |
+| 5 | "Watch the gate." | `/demo-5-deploy`: *Ship it to production as stack SdlcDemoPhotos.* | `aws-deploy` refuses: the ORR is blocked |
+| 5b | "Fix, review again, ship." | `/demo-5b-fix-and-deploy`: *Fix the RED items from the ORR, re-run the ORR, and if it passes deploy to production as stack SdlcDemoPhotos with a rollback plan.* | Alarms and runbooks added, ORR passes, change set previewed, deploy, smoke check, `deploy-record.md` |
+| 6 | "Day 2." | `/demo-6-maintain`: *Some photos have been waiting for an hour and people say the same photo was announced twice. Triage it.* | `aws-maintain` reads metrics, logs and execution history through the MCP server, checks the waits and the idempotency keys, proposes a fix and logs it in `maintain-log.md` |
 
 ## Flow B: Pulse on Lambda Web Functions
 
