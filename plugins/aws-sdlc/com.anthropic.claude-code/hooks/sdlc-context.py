@@ -60,6 +60,7 @@ def main() -> None:
         "Before writing code, running AWS commands, or answering, load the phase skill that matches "
         "the user's request (aws-intent, aws-build, aws-verify, aws-orr, aws-deploy, aws-maintain; "
         f"use `{next_skill}` if the request is to continue) and follow its workflow and artifact contract.",
+        "End the reply with one line: `Next → <phase skill>: say \"<example prompt>\"`.",
     ]
     if orr is None or orr.get("status") == "blocked":
         lines.append("Production deploys are gated: orr.md is " + ("missing." if orr is None else "blocked."))

@@ -111,6 +111,7 @@ Read the account only to detect state (for example, whether a stack named in `bu
 
 ## Rules
 
+- **End every reply with the next step.** Last line: `Next → <phase skill>: say "<example prompt>"` for the phase you handed off to.
 - **Route, do not duplicate.** Hand off to the phase skill; do not do the phase work here.
 - **Recommend, do not mandate.** When you suggest an entry phase, give the reason and let the user override.
 - **Detect, do not assume.** Base the phase on both the `.aws-sdlc/` artifacts and the wording; when they

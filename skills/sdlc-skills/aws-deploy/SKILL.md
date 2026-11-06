@@ -91,6 +91,7 @@ Preview with read-only calls (`describe_change_set`, `get_template`, `describe_s
 
 ## Rules
 
+- **End every reply with the next step.** Last line, exactly this shape: `Next → aws-maintain: say "How is it doing in production?"`. If this phase is blocked or failed, name the fix instead (for example `Next → fix the 3 RED items, then re-run the review`).
 - **Gate production on the ORR.** No prod deploy while `orr.md` is missing or blocked. Non-prod is
   allowed with an explicit warning.
 - **Preview before you apply.** Always show a diff or change set first; never apply blind.

@@ -129,6 +129,7 @@ Pull metrics, logs and traces with read-only `aws___run_script` calls (CloudWatc
 
 ## Rules
 
+- **End every reply with the next step.** Last line, exactly this shape: `Next → aws-orr or aws-intent: say "Re-run the readiness review. (or describe the next feature)"`. If this phase is blocked or failed, name the fix instead (for example `Next → fix the 3 RED items, then re-run the review`).
 - **Recommend, don't mandate.** Give options with trade-offs, make one recommendation, say why.
 - **Route, don't duplicate.** Hand off to the owning skill rather than re-deriving its content.
 - **Evidence first.** In triage, read metrics/logs/traces before forming a cause; label anything

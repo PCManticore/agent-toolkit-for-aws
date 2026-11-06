@@ -42,8 +42,11 @@ cd /path/to/demo-run
 - **AWS.** Uses your current credentials in us-west-2. Every resource is named `SdlcDemo*` and tagged
   `project=sdlc-demo`.
 
-`./claude-demo` and `./kiro-demo` open with an intro screen (`WELCOME.txt`): each phase and the AWS
-practices it applies, plus what the AWS MCP Server and Agent Toolkit add. Press Enter to start the agent. Inside a session, `/demo-help` asks the
+`./claude-demo` and `./kiro-demo` open with an intro screen (`welcome.sh`): each phase and the AWS
+practices it applies, plus what the AWS MCP Server and Agent Toolkit add. Press Enter to start the agent.
+Inside Claude Code the status bar shows the lifecycle (✓ done, ● current, ✗ blocked) and what to say
+next, and every phase reply ends with a `Next →` line, so you can move phase to phase without leaving
+the agent. Inside a session, `/demo-help` asks the
 agent to explain the plugin and where the project is in the lifecycle.
 
 Every prompt below is also a slash command in both agents. Type `/demo-1-intent` instead of pasting.

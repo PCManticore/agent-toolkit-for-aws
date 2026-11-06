@@ -116,6 +116,7 @@ Use the documentation tools for current API shapes and new features. Building wr
 
 ## Rules
 
+- **End every reply with the next step.** Last line, exactly this shape: `Next → aws-verify: say "Verify it before we ship."`. If this phase is blocked or failed, name the fix instead (for example `Next → fix the 3 RED items, then re-run the review`).
 - **Recommend, don't mandate.** Give options with trade-offs, make one
   opinionated recommendation with a reason, and defer service-level choices to
   the domain routers.

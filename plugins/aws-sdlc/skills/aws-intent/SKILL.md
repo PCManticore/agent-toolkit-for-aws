@@ -114,6 +114,7 @@ Use the documentation tools for limits, pricing and regional availability of eve
 
 ## Rules
 
+- **End every reply with the next step.** Last line, exactly this shape: `Next → aws-build: say "Build it."`. If this phase is blocked or failed, name the fix instead (for example `Next → fix the 3 RED items, then re-run the review`).
 - **Every endpoint that returns non-public data has real authentication.** Name the auth model per caller
   (machine-to-machine such as a signed webhook, versus people such as a support team) in the architecture.
   An unguessable URL, "shared only internally", or an IP that is not enforced is not access control; reject

@@ -14,7 +14,8 @@
 #   ./claude-demo   ./kiro-demo   launchers (tools auto-approved, destructive commands denied)
 #   ./teardown.sh   deletes every SdlcDemo* stack and sdlc-demo* web function in us-west-2
 #   DEMO.md         the run sheet with every prompt
-#   WELCOME.txt     the how-to screen the launchers show on an interactive start
+#   welcome.sh      the intro screen the launchers show on an interactive start
+#   .claude/settings.json   auto-approve rules plus the AWS SDLC status line (phase + what to say next)
 #   .claude/commands/demo-*.md, .kiro/prompts/demo-*.md   the same prompts as slash commands
 set -euo pipefail
 
@@ -36,7 +37,7 @@ mkdir -p "$DEMO_DIR"
 cp -R "$REPO_ROOT/demo/workspace/." "$DEMO_DIR/"
 cp "$DEMO_DIR/AGENTS.md" "$DEMO_DIR/CLAUDE.md"
 cp "$REPO_ROOT/demo/README.md" "$DEMO_DIR/DEMO.md"
-cp "$REPO_ROOT/demo/WELCOME.txt" "$DEMO_DIR/WELCOME.txt"
+cp "$REPO_ROOT/demo/welcome.sh" "$DEMO_DIR/welcome.sh"
 mkdir -p "$DEMO_DIR/.claude/commands" "$DEMO_DIR/.kiro/prompts" "$DEMO_DIR/.claude-home" "$DEMO_DIR/.kiro-home/agents" "$DEMO_DIR/.kiro-home/settings"
 for prompt in "$REPO_ROOT"/demo/prompts/*.md; do
   name="demo-$(basename "$prompt")"
@@ -66,6 +67,13 @@ data.update({"hasCompletedOnboarding": True, "theme": data.get("theme", "dark")}
 data.setdefault("projects", {})[str(demo)] = {"hasTrustDialogAccepted": True, "allowedTools": []}
 state.write_text(json.dumps(data, indent=2) + "\n")
 
+# Claude Code status line: lifecycle progress and the next prompt, always on screen.
+ws = demo / ".claude" / "settings.json"
+cfg = json.loads(ws.read_text())
+cfg["statusLine"] = {"type": "command", "padding": 0,
+                     "command": f"python3 {plugin / 'com.anthropic.claude-code' / 'statusline.py'}"}
+ws.write_text(json.dumps(cfg, indent=2) + "\n")
+
 # Kiro CLI: private KIRO_HOME, an agent that declares only the SDLC skills.
 skills = sorted(str(p) for p in (plugin / "skills").glob("*/SKILL.md"))
 hook = plugin / "com.anthropic.claude-code" / "hooks" / "sdlc-context.py"
@@ -92,7 +100,7 @@ cd "\$(dirname "\$0")"
 export PATH="$AWS_DIR:\$PATH" CLAUDE_CONFIG_DIR="$DEMO_DIR/.claude-home" AWS_REGION=us-west-2
 # Interactive start (no arguments): show how to use the plugin first.
 if [[ \$# -eq 0 && -t 1 ]]; then
-  clear; cat WELCOME.txt; read -r -p "  Press Enter to start Claude Code... " _
+  clear; bash welcome.sh; read -r -p "  Press Enter to start Claude Code... " _
 fi
 exec claude --plugin-dir "$PLUGIN" "\$@"
 EOF
@@ -103,7 +111,7 @@ cd "\$(dirname "\$0")"
 export PATH="$AWS_DIR:\$PATH" KIRO_HOME="$DEMO_DIR/.kiro-home" AWS_REGION=us-west-2
 # Interactive start (no arguments): show how to use the plugin first.
 if [[ \$# -eq 0 && -t 1 ]]; then
-  clear; cat WELCOME.txt; read -r -p "  Press Enter to start Kiro CLI... " _
+  clear; bash welcome.sh; read -r -p "  Press Enter to start Kiro CLI... " _
 fi
 exec kiro-cli chat --agent aws-sdlc-demo --trust-all-tools "\$@"
 EOF

@@ -115,6 +115,7 @@ Use `aws___run_script` for read-only checks such as `accessanalyzer validate_pol
 
 ## Rules
 
+- **End every reply with the next step.** Last line, exactly this shape: `Next → aws-orr: say "Are we ready for production?"`. If this phase is blocked or failed, name the fix instead (for example `Next → fix the 3 RED items, then re-run the review`).
 - **Unauthenticated access to non-public data is a FAIL**, whatever intent.md assumed. Check every
   endpoint (Function URL `AuthType`, API Gateway authorizers, S3 bucket policies) and record the auth model
   per route; a route that serves stored data with no auth fails the security rung.

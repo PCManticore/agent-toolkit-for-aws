@@ -97,6 +97,7 @@ Gather live evidence with read-only `aws___run_script` calls (describe/list/get 
 
 ## Rules
 
+- **End every reply with the next step.** Last line, exactly this shape: `Next → aws-deploy: say "Ship it to production."`. If this phase is blocked or failed, name the fix instead (for example `Next → fix the 3 RED items, then re-run the review`).
 - **Recommend, don't mandate.** Where a gap has several fixes, give options with
   trade-offs and one recommendation with a reason; defer service choices to domain skills.
 - **Route, don't duplicate.** Point at the owning skill rather than re-deriving its content.
