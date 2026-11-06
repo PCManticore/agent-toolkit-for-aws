@@ -32,27 +32,33 @@ Works best with the [aws-core](../aws-core/) plugin installed. Some routes point
 
 ## Try it from a local checkout
 
-No marketplace publish needed:
+No marketplace publish needed. `tools/dev/setup-demo.sh` creates a workspace where Claude Code and Kiro
+CLI see only these seven skills (your personal skills and plugins are not loaded), tools are
+auto-approved, and every demo prompt is a slash command:
 
 ```bash
-tools/dev/setup-demo.sh            # creates /tmp/aws-sdlc-demo with a Kiro agent config
-cd /tmp/aws-sdlc-demo
-
-# Claude Code: load both plugins from the checkout for this session
-claude --plugin-dir <repo>/plugins/aws-sdlc --plugin-dir <repo>/plugins/aws-core
-
-# Kiro CLI: agent that loads only this checkout's skills plus the AWS MCP Server
-kiro-cli chat --agent aws-sdlc-demo
+tools/dev/setup-demo.sh /path/to/demo-run
+cd /path/to/demo-run
+./claude-demo      # or ./kiro-demo
 ```
 
-Or install from the fork as a marketplace in Claude Code:
+Domain skills (`aws-serverless`, `aws-lambda-durable-functions`, `aws-lambda-web-functions`, ...) are
+loaded on demand from the AWS MCP Server with `retrieve_skill`. Full run sheet: [demo/README.md](../../demo/README.md).
 
-```text
-/plugin marketplace add PCManticore/agent-toolkit-for-aws     # or a local path
-/plugin install aws-sdlc@agent-toolkit-for-aws
-```
+## Example prompts (one per phase)
 
-`tools/dev/smoke-test.sh` sends one prompt each for intent, ORR and maintain through headless Claude Code and checks that the matching phase skill was invoked.
+| Phase | Prompt |
+|---|---|
+| intent | *I want to build the order workflow for our coffee shop app. When a customer orders, we validate the order, charge their card, wait for the barista to accept it (up to 10 minutes, otherwise refund), then notify the customer. A customer must never be charged twice. Python, us-west-2, under $20/month.* |
+| build | *Build it. CDK in TypeScript, Python function code, stack SdlcDemoOrders, tag project=sdlc-demo, nothing retained on delete. Add unit tests; don't deploy yet.* |
+| verify | *Verify it before we ship. Deploy a dev copy and run an accepted order and a refunded order end to end.* |
+| orr | *We roll this out to all our stores next week. Are we operationally ready?* |
+| deploy | *Ship it to production as stack SdlcDemoOrders.* (refused while the ORR is blocked) |
+| maintain | *Some orders have been stuck for an hour and two customers say they were charged twice. Triage it.* |
+
+Plain Claude Code without the demo workspace: `claude --plugin-dir plugins/aws-sdlc`, or
+`/plugin marketplace add PCManticore/agent-toolkit-for-aws` then `/plugin install aws-sdlc@agent-toolkit-for-aws`.
+`tools/dev/smoke-test.sh` checks that intent, ORR and maintain prompts reach the right phase skill.
 
 ## Skill sources
 

@@ -16,6 +16,8 @@ rollout, rollback, record) here.
 | CDK app deploy — `cdk diff`, `cdk deploy`, CDK Pipelines | `aws-cdk` | aws-core | Owns CDK synth/diff/deploy |
 | Raw CloudFormation stacks and change sets | `aws-cloudformation` | aws-core | Owns template authoring and change-set review |
 | SAM / serverless deploy, Lambda alias + version traffic shifting | `aws-serverless` | aws-core | Owns serverless packaging and Lambda deploy |
+| Lambda Web Functions revision, endpoint traffic, `aws lambda-web` deploy | `aws-lambda-web-functions` | specialized (loaded from the AWS MCP Server with `aws___retrieve_skill` when not installed) | Revisions and endpoints are the deploy unit; read its `references/deployment.md`. |
+| Durable function versions while executions are in flight | `aws-lambda-durable-functions` | specialized (loaded from the AWS MCP Server with `aws___retrieve_skill` when not installed) | In-flight executions replay against the version they started on; read its deployment guidance before shifting traffic. |
 | ECS service deploy (blue/green, deployment circuit breaker, rolling params) | `aws-containers` | aws-core | Owns ECS/Fargate service deployment config |
 | Deploy/execution role too broad | `aws-iam` | aws-core | Owns least-privilege policy for the deploy role |
 | Alarms and dashboards to watch during and after rollout | `aws-observability` | aws-core | Owns the metrics/alarms that gate a canary |

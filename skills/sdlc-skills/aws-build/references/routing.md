@@ -13,6 +13,8 @@ noted.
 | Team wants declarative templates, or must match an existing CloudFormation estate | **aws-cloudformation** | Plain templates, change sets, drift detection. No build step, no language runtime. |
 | Serverless app that wants a fast local build/invoke loop | **aws-serverless** | Owns the SAM and CDK deployment references for Lambda/API Gateway/EventBridge, plus `sam local invoke`. SAM is CloudFormation underneath. |
 | Full-stack app that should follow a paved, opinionated pattern | **aws-blocks** | Composable full-stack building blocks; least custom IaC to maintain. |
+| Node.js web app or HTTP API on Lambda Web Functions | **aws-lambda-web-functions** (loaded from the AWS MCP Server with `aws___retrieve_skill` when not installed) | Owns `AWS::Lambda::WebFunction*` resources, packaging, endpoint auth type and the `aws lambda-web` CLI. Read its `references/infrastructure-as-code.md` before writing CDK or CloudFormation. |
+| Durable workflow in Lambda (steps, waits, callbacks) | **aws-lambda-durable-functions** (loaded from the AWS MCP Server with `aws___retrieve_skill` when not installed) | Owns the durable execution SDK, step and wait semantics, replay rules and IaC for durable functions. |
 
 There is no dedicated SAM skill. Route SAM questions to **aws-serverless**
 (deployment reference) and **aws-cloudformation** for the template mechanics.

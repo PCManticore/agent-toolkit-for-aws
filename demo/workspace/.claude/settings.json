@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Skill",
+      "WebFetch",
+      "WebSearch",
+      "TodoWrite",
+      "mcp__plugin_aws-sdlc_aws-mcp__*"
+    ],
+    "deny": [
+      "Bash(kill:*)",
+      "Bash(pkill:*)",
+      "Bash(killall:*)",
+      "Bash(lsof -ti:*)",
+      "Bash(rm -rf /:*)",
+      "Bash(rm -rf ~:*)",
+      "Bash(git push:*)",
+      "Bash(cdk destroy:*)",
+      "Bash(npx cdk destroy:*)",
+      "Bash(aws cloudformation delete-stack:*)",
+      "Bash(aws iam delete:*)",
+      "Bash(aws s3 rb:*)"
+    ]
+  }
+}

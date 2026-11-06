@@ -34,6 +34,8 @@ to exist in this repo. Plugin is noted when the skill is not in aws-core.
 | Security posture, encryption, public exposure, CVE, threat model drift | **aws-security** | aws-core | Domain router for security review of a live workload. |
 | IAM role or policy wider than least-privilege | **aws-iam** | aws-core | Owns IAM policy review and least-privilege scoping. |
 | Runtime EOL, database or engine version upgrade, deprecated feature | the owning domain/service skill (for example **aws-serverless** for Lambda runtimes, **aws-database** for engine versions) | aws-core | The service skill carries supported versions and the upgrade path; confirm EOL dates and replacements in live AWS docs. |
+| Web Function errors, latency, concurrency per environment, cross-request state leaks | **aws-lambda-web-functions** (loaded from the AWS MCP Server with `aws___retrieve_skill` when not installed) | Its `references/troubleshooting.md`, `scaling-and-concurrency.md` and `observability.md` cover the Web Functions model. |
+| Stuck, failed or repeated durable executions, replay or idempotency problems | **aws-lambda-durable-functions** (loaded from the AWS MCP Server with `aws___retrieve_skill` when not installed) | Its troubleshooting guidance covers execution history, checkpoints, waits and duplicate side effects. |
 
 ## Readiness drift (any loop)
 

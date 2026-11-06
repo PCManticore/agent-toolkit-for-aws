@@ -85,7 +85,7 @@ This plugin configures the AWS MCP Server. Prefer its tools over the local AWS C
 
 - `aws___search_documentation`, `aws___read_documentation`, `aws___get_regional_availability`, `aws___list_regions`: live facts (limits, pricing, regions, new launches). No credentials needed.
 - `aws___run_script`: sandboxed Python with `await call_boto3(service_name=..., operation_name=...)` (see the tool description for parameters) under the user's IAM credentials. Every call is logged in CloudTrail and carries the `aws:ViaAWSMCPService` / `aws:CalledViaAWSMCP` condition keys, so agent actions stay auditable.
-- `aws___retrieve_skill(skill_name=...)`: load a routed skill that is not installed locally (pass `file="references/..."` for its reference files).
+- `aws___retrieve_skill(skill_name=...)`: load a routed skill that is not installed locally (pass `file="references/..."` for its reference files). When a phase routes to a skill, load it (locally or through `aws___retrieve_skill`) before acting in its domain; do not work from memory, because services launched after the model's training cutoff are where memory is wrong.
 
 Preview with read-only calls (`describe_change_set`, `get_template`, `describe_stacks`) through `aws___run_script`. Run the deploy itself with the IaC tool's CLI (`cdk deploy`, `sam deploy`, `aws cloudformation deploy`) after the user confirms. Smoke-check through `aws___run_script` and record the API calls in `deploy-record.md`. If the MCP server is not connected, fall back to the AWS CLI with the same read-only-by-default rule.
 

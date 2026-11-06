@@ -32,7 +32,7 @@ def read_header(path: Path) -> dict:
 
 def main() -> None:
     try:
-        payload = json.load(sys.stdin)
+        payload = json.load(sys.stdin) if not sys.stdin.isatty() else {}
     except ValueError:
         payload = {}
     cwd = Path(payload.get("cwd") or os.getcwd())
@@ -64,6 +64,9 @@ def main() -> None:
     if orr is None or orr.get("status") == "blocked":
         lines.append("Production deploys are gated: orr.md is " + ("missing." if orr is None else "blocked."))
 
+    if "--plain" in sys.argv:  # Kiro CLI hooks add stdout to context as-is
+        print("\n".join(lines))
+        return
     print(json.dumps({
         "hookSpecificOutput": {
             "hookEventName": "UserPromptSubmit",

@@ -9,6 +9,8 @@ architecture. Each routed skill name below exists in this repo; the plugin is no
 | Signal in the request | Route to | Plugin | Why |
 |---|---|---|---|
 | Event-driven, API backend, cron/jobs, Lambda, orchestration, "serverless" | `aws-serverless` | aws-core | Owns the Lambda form-factor, orchestration, eventing, and HTTP front-door decisions. |
+| Node.js HTTP server, web app, SSR site, server-sent events or token streaming to a browser | `aws-serverless` → `aws-lambda-web-functions` | specialized (loaded from the AWS MCP Server with `aws___retrieve_skill` when not installed) | Web Functions run a port-listening Node.js server with response streaming and a global HTTPS URL; aws-serverless confirms the form factor. |
+| Multi-step workflow written as code: checkpoints, retries, waits for a human or a callback, must not repeat a completed step | `aws-serverless` → `aws-lambda-durable-functions` (or `aws-step-functions`) | specialized (loaded from the AWS MCP Server with `aws___retrieve_skill` when not installed) | aws-serverless decides Durable Functions versus Step Functions; the durable skill owns steps, waits, replay and idempotency. |
 | Long-running processes, EC2, batch, GPU, HPC, "a server" | `aws-compute` | aws-core | Owns instance-level and non-container compute. |
 | ECS, EKS, Fargate, "containerize", Kubernetes | `aws-containers` | aws-core | Owns container orchestration and capacity. |
 | Relational, key-value, document, cache, "where do I store the data" | `aws-database` | aws-core | Owns engine selection and data-model trade-offs. |
