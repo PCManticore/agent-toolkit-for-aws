@@ -31,6 +31,11 @@
       "name": "aws-startup-advisor",
       "source": "./plugins/aws-startup-advisor",
       "description": "AWS Startup Advisor puts an AWS Startups Solutions Architect in your coding assistant. It recommends the smallest architecture that fits your stage, credits, and team, then can scaffold it, migrate you from Azure, Google Cloud, or Heroku, move your model calls to Amazon Bedrock, and investigate production incidents. It also answers your AWS Activate credits eligibility questions and finds startup offers you can use."
+    },
+    {
+      "name": "aws-sdlc",
+      "source": "./plugins/aws-sdlc",
+      "description": "Lifecycle-first skills for building on AWS. One skill per SDLC phase - intent, build, verify, operational readiness review (ORR), deploy, and maintain - plus an entry router. Each phase runs a short workflow, hands off to the next phase through .aws-sdlc/ artifacts, and routes to the domain skills in aws-core (and other toolkit plugins) for service-level depth. Recommends options with trade-offs instead of prescribing services. Works best with the aws-core plugin installed."
     }
   ]
 }
