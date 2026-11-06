@@ -5,7 +5,7 @@ the SDLC phases: **intent → build → verify → ORR → deploy → maintain**
 
 - **Flow A (main): a coffee-shop order workflow on Lambda Durable Functions.** Multi-step, retries,
   a 10-minute wait for the barista, and a hard "never charge twice" rule.
-- **Flow B (alternative): Pulse, a live all-hands Q&A board on Lambda Web Functions** (launched
+- **Flow B (alternative): Pulse, a live Q&A board for events on Lambda Web Functions** (launched
   October 2026). The audience votes from their phones while the projector re-ranks questions live.
 
 ## What the audience should notice
@@ -48,7 +48,7 @@ Every prompt below is also a slash command in both agents. Type `/demo-1-intent`
 
 | # | Say | Type (slash command and prompt) | Expect |
 |---|---|---|---|
-| 0 | "Seven skills, one per phase." | `/demo-0-start`: *I want to build something on AWS for our all-hands. Where do I start, and what does the lifecycle look like?* | `aws-sdlc` shows the lifecycle map and points to intent |
+| 0 | "Seven skills, one per phase." | `/demo-0-start`: *I want to build something new on AWS. Where do I start, and what does the lifecycle look like?* | `aws-sdlc` shows the lifecycle map and points to intent |
 | 1 | "I describe the problem. I don't name a service." | `/demo-1-intent`: *I want to build the order workflow for our coffee shop app. When a customer orders, we validate the order, charge their card through our payment provider, wait for the barista to accept it (up to 10 minutes, otherwise refund the customer), then notify the customer and add loyalty points. Any step can fail and retry, but a customer must never be charged twice. About 2,000 orders a day with a lunch peak, Python team, us-west-2, budget under $20/month. Pick the recommendation yourself; I accept it.* | `aws-intent` pulls `aws-serverless` from the MCP server, compares **Durable Functions** with Step Functions, and recommends one with reasons. `intent.md` has requirements, options, cost and doc sources |
 | 2 | "Now it pulls the skill for the service it picked." | `/demo-2-build`: *Build it. Use CDK in TypeScript for the infrastructure and Python for the function code, stack name SdlcDemoOrders, tag every resource project=sdlc-demo, and nothing retained on delete. Fake the payment provider and the barista so a test event controls whether payment succeeds and whether the barista accepts. Add unit tests, make sure the stack synthesizes, and don't deploy yet.* | `aws-build` retrieves `aws-lambda-durable-functions`, writes the handler with steps and a wait, an idempotency key on the charge, CDK and tests. Writes `build.md` |
 | 3 | "Verify is evidence, not opinion." | `/demo-3-verify`: *Verify it before we ship. Deploy a dev copy as stack SdlcDemoOrders-dev in us-west-2 and run two orders end to end: one the barista accepts, and one the barista never accepts so it refunds. Show me where each execution checkpointed.* | PASS/FAIL/SKIPPED per check with the command that proved it. Execution history shows completed steps and the wait |
@@ -63,10 +63,10 @@ Same phases, different app. Use the `wf-` commands.
 
 | # | Type | Expect |
 |---|---|---|
-| 1 | `/demo-wf-1-intent`: *I want to build Pulse, a live Q&A board for our all-hands. People open a link on their phone, post a question and upvote other questions. The big screen shows the top questions re-ranking live as votes come in, and a "Summarize" button streams an AI summary of what people are asking, token by token. Expect about 300 people for one hour, a public link with no login, Node.js, us-west-2, budget a few dollars. Pick the recommendation yourself; I accept it.* | Routes to **Web Functions** (Node.js server plus server-sent events), DynamoDB and Bedrock. Names the abuse limits a public link needs |
+| 1 | `/demo-wf-1-intent`: *I want to build Pulse, a live Q&A board for our company events. People open a link on their phone, post a question and upvote other questions. The big screen shows the top questions re-ranking live as votes come in, and a "Summarize" button streams an AI summary of what people are asking, token by token. Expect about 300 people for one hour, a public link with no login, Node.js, us-west-2, budget a few dollars. Pick the recommendation yourself; I accept it.* | Routes to **Web Functions** (Node.js server plus server-sent events), DynamoDB and Bedrock. Names the abuse limits a public link needs |
 | 2 | `/demo-wf-2-build`: *Build it. Use CDK in TypeScript, stack name SdlcDemoPulse, tag every resource project=sdlc-demo, and nothing retained on delete. Make the UI look good on a phone and on a projector. Run it locally on port 8787 to check it works, make sure the stack synthesizes, and don't deploy yet.* | Retrieves `aws-lambda-web-functions`, writes an Express app and CDK, runs it locally on 8787 |
 | 3 | `/demo-wf-3-verify`: *Verify it before we ship. Deploy a dev copy as stack SdlcDemoPulse-dev in us-west-2 for the integration tests, and give me its URL.* | Dev URL to open on screen |
-| 4 | `/demo-wf-4-orr`: *We go live at the all-hands next week with about 300 people on a public link. Are we operationally ready? Check the dev stack read-only. Owner is the demo team; there is no on-call rotation.* | RED items such as no alarms or no rate limit |
+| 4 | `/demo-wf-4-orr`: *We go live at our next company event with about 300 people on a public link. Are we operationally ready? Check the dev stack read-only. Owner is the demo team; there is no on-call rotation.* | RED items such as no alarms or no rate limit |
 | 5 | `/demo-wf-5-deploy`, then `/demo-wf-5b-fix-and-deploy` | Gate refuses, then ships and returns a URL for a QR code. Let the room vote |
 | 6 | `/demo-wf-6-maintain`: *People in the room say Pulse got slow and some votes don't show up. Triage it.* | Routes to the Web Functions concurrency and troubleshooting references |
 
