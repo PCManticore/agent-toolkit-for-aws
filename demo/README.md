@@ -39,6 +39,7 @@ cd /path/to/demo-run
 ./kiro-demo        # or Kiro CLI
 ```
 
+- Re-running `setup-demo.sh` (or `./reset.sh`) starts from a clean slate: it deletes `.aws-sdlc/` and any generated app code, so the status bar is back at ● intent. It keeps your sign-in and does not touch AWS.
 - Only the seven SDLC skills load; your personal skills and plugins don't. Check with *What skills do you have?*
 - Claude Code auto-approves edits, shell, file and AWS MCP tools; destructive commands are denied.
 - Local servers use port 8787. Nothing touches port 3000.

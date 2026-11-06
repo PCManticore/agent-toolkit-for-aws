@@ -33,7 +33,22 @@ if [[ -z "$AWS_BIN" ]]; then
 fi
 AWS_DIR="$(dirname "$AWS_BIN")"
 
+# Start every run from a clean slate: delete the previous lifecycle state (.aws-sdlc/), generated app
+# code and logs. Only a folder this script created (marker file or launcher present) is wiped, and the
+# private Claude Code / Kiro homes are kept so you stay signed in.
+case "$(cd "$(dirname "$DEMO_DIR")" 2>/dev/null && pwd)/$(basename "$DEMO_DIR")" in
+  /|"$HOME"|"$REPO_ROOT"|"$(dirname "$REPO_ROOT")") echo "Refusing to use $DEMO_DIR as a demo folder" >&2; exit 1 ;;
+esac
+if [[ -d "$DEMO_DIR" && -n "$(ls -A "$DEMO_DIR" 2>/dev/null)" ]]; then
+  if [[ -f "$DEMO_DIR/.aws-sdlc-demo" || -x "$DEMO_DIR/claude-demo" ]]; then
+    find "$DEMO_DIR" -mindepth 1 -maxdepth 1 ! -name .claude-home ! -name .kiro-home -exec rm -rf {} +
+    echo "Cleaned previous demo state in $DEMO_DIR"
+  else
+    echo "$DEMO_DIR is not empty and was not created by this script; pick another folder" >&2; exit 1
+  fi
+fi
 mkdir -p "$DEMO_DIR"
+touch "$DEMO_DIR/.aws-sdlc-demo"
 cp -R "$REPO_ROOT/demo/workspace/." "$DEMO_DIR/"
 cp "$DEMO_DIR/AGENTS.md" "$DEMO_DIR/CLAUDE.md"
 cp "$REPO_ROOT/demo/README.md" "$DEMO_DIR/DEMO.md"
@@ -141,7 +156,12 @@ done
 echo "Resources still tagged project=sdlc-demo:"
 aws resourcegroupstaggingapi get-resources --tag-filters Key=project,Values=sdlc-demo --query 'ResourceTagMappingList[].ResourceARN' --output text
 EOF
-chmod +x "$DEMO_DIR/claude-demo" "$DEMO_DIR/kiro-demo" "$DEMO_DIR/teardown.sh"
+cat > "$DEMO_DIR/reset.sh" <<EOF
+#!/usr/bin/env bash
+# Start the demo over: clears .aws-sdlc/ and generated app code. Does not touch AWS; run ./teardown.sh for that.
+exec "$REPO_ROOT/tools/dev/setup-demo.sh" "$DEMO_DIR"
+EOF
+chmod +x "$DEMO_DIR/claude-demo" "$DEMO_DIR/kiro-demo" "$DEMO_DIR/teardown.sh" "$DEMO_DIR/reset.sh"
 
 cat <<EOF
 
@@ -150,7 +170,7 @@ Demo workspace ready: $DEMO_DIR  (AWS CLI: $AWS_BIN)
   cd $DEMO_DIR
   ./claude-demo        # then type /demo-1-intent, /demo-2-build, ...
   ./kiro-demo          # same: /demo-1-intent, /demo-2-build, ... (or paste from DEMO.md)
-  ./teardown.sh        # at the end
+  ./reset.sh           # start over (clears .aws-sdlc/ and generated code)
+  ./teardown.sh        # at the end (deletes AWS resources)
 
-Restart the lifecycle by deleting .aws-sdlc/ and the generated app files.
 EOF
