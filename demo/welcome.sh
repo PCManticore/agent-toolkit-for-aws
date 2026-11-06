@@ -4,7 +4,8 @@ if [[ -n "${NO_COLOR:-}" ]]; then O= W= G= D= B= R= C=; else
   O=$'\033[38;5;214m' W=$'\033[97m' G=$'\033[38;5;120m' D=$'\033[38;5;252m' B=$'\033[1m' R=$'\033[0m' C=$'\033[38;5;117m'
 fi
 
-phase() { printf "    ${O}${B}%-12s${R} %s\n" "$1" "$2"; [[ -n "${3:-}" ]] && printf "    %-12s ${D}%s${R}\n" "" "$3"; }
+benefit() { printf "    ${G}●${R} ${B}%-22s${R}%s\n" "$1" "$2"; [[ -n "${3:-}" ]] && printf "      %-22s%s\n" "" "$3"; }
+phase() { printf "    ${O}${B}%-11s${R} %s\n" "$1" "$2"; [[ -n "${3:-}" ]] && printf "    %-11s ${D}%s${R}\n" "" "$3"; }
 
 cat <<EOF
 
@@ -20,24 +21,26 @@ ${D}       ▲                             ▲                      │
 
 
 EOF
-phase "intent"   "Idea → requirements → AWS architecture options with trade-offs," "live pricing and regional availability, one recommendation"
-phase "build"    "AWS CDK, CloudFormation or SAM · AWS SDKs · least-privilege IAM" "secrets in Secrets Manager · unit tests"
-phase "verify"   "cdk synth & cfn-lint · IAM Access Analyzer · security scans" "tests against a dev stack · cost against your budget"
-phase "readiness"      "Operational readiness: CloudWatch alarms, runbooks, rollback, multi-AZ," "backups, CloudTrail, budgets. Any RED item blocks production"
-phase "deploy"   "Change-set preview · staged rollout (Lambda aliases, CodeDeploy," "ECS blue/green) · written rollback plan · smoke checks"
-phase "maintain" "Triage from CloudWatch metrics, logs and X-Ray traces · alarm gaps" "Cost Explorer · runtime and engine upgrades"
+phase "intent"    "Turns your idea into requirements and 1–3 AWS designs with trade-offs," "and recommends one (live AWS docs, pricing and regional availability)"
+phase "build"     "Writes the infrastructure and app code, least-privilege from the start" "(AWS CDK, CloudFormation or SAM · AWS SDKs · IAM · Secrets Manager · unit tests)"
+phase "verify"    "Proves it works before it ships, with the command behind every check" "(cdk synth, cfn-lint · IAM Access Analyzer · security scans · tests · cost vs budget)"
+phase "readiness" "Checks you can run it in production; any RED item blocks the deploy" "(CloudWatch alarms · runbooks · rollback · multi-AZ · backups · CloudTrail · budgets)"
+phase "deploy"    "Ships safely: previews the change, rolls out in stages, plans the rollback" "(CloudFormation change sets · Lambda aliases · CodeDeploy · ECS blue/green · smoke tests)"
+phase "maintain"  "Keeps it healthy once live: triage, missing alarms, cost, upgrades" "(CloudWatch metrics and logs · X-Ray traces · Cost Explorer · runtime and engine versions)"
 cat <<EOF
 
   ${D}Each phase routes to deeper AWS service skills (Lambda Durable Functions, Web
   Functions, DynamoDB, Bedrock, …) and records its work in ${R}${C}.aws-sdlc/${R}
 
-  ${W}${B}Why it works${R}
-    ${G}●${R} ${B}AWS MCP Server${R}  One endpoint for 15,000+ AWS APIs, live AWS documentation, and
-                      service skills on demand, even for services newer than the model.
-    ${G}●${R} ${B}Your IAM${R}        Every call runs under your credentials, is logged in CloudTrail,
-                      and carries ${C}aws:ViaAWSMCPService${R} / ${C}aws:CalledViaAWSMCP${R}.
-    ${G}●${R} ${B}Agent Toolkit${R}   Open source. Same skills in Claude Code, Kiro, Cursor and Codex.
-                      Install: ${C}aws configure agent-toolkit${R}
+  ${W}${B}What you get with the AWS MCP Server${R}
+EOF
+benefit "Every AWS API, today" "15,000+ APIs behind one endpoint, plus skills for newly launched" "services, loaded on demand even when the model has never seen them"
+benefit "Live knowledge" "Answers from current AWS documentation, not training data"
+benefit "Governance" "Every call runs under your own IAM; the ${C}aws:ViaAWSMCPService${R} and" "${C}aws:CalledViaAWSMCP${R} condition keys let you write rules just for agents"
+benefit "Audit" "Every agent call is a CloudTrail event: who, what, when, via the MCP Server"
+benefit "Monitoring" "Usage and errors per tool as CloudWatch metrics"
+benefit "Any agent" "Open source; the same skills in Claude Code, Kiro, Cursor and Codex" "Install: ${C}aws configure agent-toolkit${R}"
+cat <<EOF
 
   ${O}${B}▸ Just tell it what you want to build.${R}  ${D}The status bar shows the phase and what to say next.${R}
 
