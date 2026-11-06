@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Intro screen for the AWS SDLC skills demo. Colors degrade to plain text when NO_COLOR is set.
 if [[ -n "${NO_COLOR:-}" ]]; then O= W= G= D= B= R= C=; else
-  O=$'\033[38;5;208m' W=$'\033[97m' G=$'\033[32m' D=$'\033[2m' B=$'\033[1m' R=$'\033[0m' C=$'\033[36m'
+  O=$'\033[38;5;214m' W=$'\033[97m' G=$'\033[38;5;120m' D=$'\033[38;5;252m' B=$'\033[1m' R=$'\033[0m' C=$'\033[38;5;117m'
 fi
 
 phase() { printf "    ${O}${B}%-12s${R} %s\n" "$1" "$2"; [[ -n "${3:-}" ]] && printf "    %-12s ${D}%s${R}\n" "" "$3"; }
