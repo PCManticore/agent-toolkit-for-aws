@@ -1,38 +1,44 @@
 
-  ╭──────────────────────────────────────────────────────────────────────────╮
-  │  Agent Toolkit for AWS — SDLC plugin (aws-sdlc)                          │
-  ╰──────────────────────────────────────────────────────────────────────────╯
+  ╭──────────────────────────────────────────────────────────────────────────────╮
+  │  Agent Toolkit for AWS · SDLC skills                                          │
+  │  AWS best practices for every phase of building software, in any agent.      │
+  ╰──────────────────────────────────────────────────────────────────────────────╯
 
-  Seven skills, one per phase. Describe what you want; the agent finds the phase.
+  Describe what you want to build. The agent finds the phase and applies the AWS
+  guidance for it: Well-Architected, least-privilege IAM, staged rollouts, ORRs.
 
-    aws-intent ─► aws-build ─► aws-verify ─► aws-orr ─► aws-deploy ─► aws-maintain
-        ▲                                       ▲                          │
-        └──────────── new feature ──────────────┴──── readiness drift ─────┘
+    intent ─► build ─► verify ─► readiness review ─► deploy ─► maintain
+      ▲                                ▲                          │
+      └──────── new feature ───────────┴──── readiness drift ─────┘
 
-    aws-sdlc       where am I, what's next
-    aws-intent     requirements, options, one recommendation   → .aws-sdlc/intent.md
-    aws-build      IaC + app code + tests                       → .aws-sdlc/build.md
-    aws-verify     synth, IAM, security, tests, cost            → .aws-sdlc/verify-report.md
-    aws-orr        operational readiness review (gate)          → .aws-sdlc/orr.md
-    aws-deploy     preview, staged rollout, rollback plan       → .aws-sdlc/deploy-record.md
-    aws-maintain   triage, alarms, cost, upgrades               → .aws-sdlc/maintain-log.md
+    aws-intent    Turns an idea into requirements and AWS architecture options
+                  (serverless, containers, databases, AI) with trade-offs, live
+                  pricing and regional availability, and one recommendation.
+    aws-build     Infrastructure as code with AWS CDK, CloudFormation or SAM, app
+                  code with the AWS SDKs, least-privilege IAM, secrets in Secrets
+                  Manager, unit tests.
+    aws-verify    cdk synth / cfn-lint, IAM Access Analyzer policy checks, security
+                  scans, tests against a dev stack, cost against your budget.
+    aws-orr       Operational readiness review: CloudWatch alarms, runbooks,
+                  rollback, multi-AZ, backups, CloudTrail, budgets. Any RED item
+                  blocks the production deploy.
+    aws-deploy    Change-set preview, staged rollout (Lambda aliases, CodeDeploy,
+                  ECS blue/green), a written rollback plan, smoke checks.
+    aws-maintain  Triage from CloudWatch metrics, logs and X-Ray traces, alarm
+                  gaps, Cost Explorer, runtime and engine upgrades.
 
-  Service skills (Lambda Durable Functions, Web Functions, DynamoDB, ...) load on
-  demand from the AWS MCP Server. Every AWS call runs under your IAM, in CloudTrail.
+  Each phase routes to deeper AWS service skills (Lambda Durable Functions, Web
+  Functions, DynamoDB, Bedrock, ...) and records its work in .aws-sdlc/.
 
-  Try the flow (slash commands, or type your own request):
+  Why it works
+    AWS MCP Server   One endpoint for 15,000+ AWS APIs, live AWS documentation,
+                     and service skills loaded on demand, including services
+                     launched after the model's training cutoff.
+    Your IAM         Every call runs under your own credentials, is logged in
+                     CloudTrail, and carries the aws:ViaAWSMCPService and
+                     aws:CalledViaAWSMCP condition keys for policies and audits.
+    Agent Toolkit    Open source. The same skills work in Claude Code, Kiro,
+                     Cursor and Codex. Install with: aws configure agent-toolkit
 
-    /demo-help                how to use the plugin, where this project is
-    /demo-0-start             where do I start?
-    /demo-1-intent            team photo wall: upload, AI caption, moderator approval
-    /demo-2-build             CDK + Python durable function + tests
-    /demo-3-verify            dev stack, approved and rejected uploads
-    /demo-4-orr               are we operationally ready?
-    /demo-5-deploy            ship to prod (watch the ORR gate)
-    /demo-5b-fix-and-deploy   fix blockers, re-run ORR, ship
-    /demo-6-maintain          stuck photos, duplicate announcements
-
-    /demo-wf-1-intent ...     same flow for a live Q&A board on Lambda Web Functions
-
-  Or ask: "What skills do you have?"   Full run sheet: DEMO.md   Clean up: ./teardown.sh
+  Just tell it what you want to build.
 
