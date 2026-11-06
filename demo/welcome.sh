@@ -14,9 +14,9 @@ cat <<EOF
   ${D}Describe what you want to build. The agent finds the phase and applies the AWS
   guidance for it: Well-Architected, least-privilege IAM, staged rollouts, ORRs.${R}
 
-    ${O}intent${R} ${D}─▶${R} ${O}build${R} ${D}─▶${R} ${O}verify${R} ${D}─▶${R} ${O}readiness review${R} ${D}─▶${R} ${O}deploy${R} ${D}─▶${R} ${O}maintain${R}
-      ${D}▲                                       ▲                         │
-      └────────── new feature ────────────────┴──── readiness drift ────┘${R}
+    ${O}intent${R} ${D}─▶${R} ${O}build${R} ${D}─▶${R} ${O}verify${R} ${D}─▶${R} ${O}orr${R} ${D}─▶${R} ${O}deploy${R} ${D}─▶${R} ${O}maintain${R}
+${D}       ▲                          ▲                   │
+       └────── new feature ───────┴─ readiness drift ─┘${R}
 
 EOF
 phase "intent"   "Idea → requirements → AWS architecture options with trade-offs," "live pricing and regional availability, one recommendation"
