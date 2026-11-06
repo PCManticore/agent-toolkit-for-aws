@@ -6,6 +6,8 @@ inputs: [deploy-record.md, intent.md]
 next: aws-orr
 ---
 
+> Next step: invoke the `aws-orr` skill. It reads this file. If the user asked for a specific phase, invoke that phase's skill instead.
+
 # Maintain log
 
 Append one dated entry per loop run. Newest first. Keep evidence verbatim.

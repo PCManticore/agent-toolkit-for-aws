@@ -6,6 +6,8 @@ inputs: [intent.md, build.md, verify-report.md]
 next: aws-deploy
 ---
 
+> Next step: invoke the `aws-deploy` skill. It reads this file. If the user asked for a specific phase, invoke that phase's skill instead.
+
 # Operational Readiness Review — <workload name>
 
 - **Criticality tier:** <prototype | internal | customer-facing | critical>

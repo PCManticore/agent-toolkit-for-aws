@@ -26,5 +26,6 @@
     "operations",
     "observability",
     "incident-response"
-  ]
+  ],
+  "hooks": "./com.anthropic.claude-code/hooks/hooks.json"
 }

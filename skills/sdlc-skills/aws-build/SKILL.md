@@ -1,15 +1,12 @@
 ---
 name: aws-build
 description: >-
-  Build phase of the AWS SDLC lifecycle: turn an intent (requirements plus a
-  chosen architecture) into infrastructure-as-code and application code.
-  Triggers: "build it", "implement this", "write the CDK/CloudFormation/SAM",
-  "scaffold the app", "stand up the resources". Picks an IaC tool by context
-  (CDK, CloudFormation, SAM, or AWS Blocks) and routes to the owning skill,
-  wires least-privilege IAM and secrets, builds in small increments that synth
-  cleanly. Reads .aws-sdlc/intent.md, writes .aws-sdlc/build.md. Not for
-  choosing the architecture (use aws-intent), pre-ship verification (use
-  aws-verify), or deploying to an environment (use aws-deploy).
+  Use whenever you write infrastructure-as-code or application code for an AWS workload, including "run the
+  build phase", "build it", "implement the intent", "write the CDK/CloudFormation/SAM", "scaffold the app",
+  or any time .aws-sdlc/intent.md exists and code is next. Build phase: picks an IaC tool by context (CDK,
+  CloudFormation, SAM, AWS Blocks) and routes to its skill, wires least-privilege IAM and secrets, adds unit
+  tests, and builds in increments that synth. Writes .aws-sdlc/build.md. Not for choosing the architecture
+  (aws-intent), pre-ship checks (aws-verify) or deploying (aws-deploy).
 metadata:
   version: "1"
 ---
@@ -71,10 +68,18 @@ them from the existing codebase, then continue.
    it uses; no `*` resource on a principal you control. Route to **aws-iam**.
    Exit: no wildcard resource policies, no admin-equivalent roles.
 7. **Wire secrets.** No secret in code, template, or env literal. Store in
-   Secrets Manager (or SSM SecureString) and reference by ARN. Route to
+   Secrets Manager and reference by ARN. In IaC, create the secret with a generated value (CDK
+   `secretsmanager.Secret`, CloudFormation `GenerateSecretString`) and grant `secretsmanager:GetSecretValue`
+   on that ARN only; CloudFormation cannot create SSM SecureString parameters, so never ship a plaintext
+   String parameter with a placeholder. Grant data access by verb (for example `grantWriteData` for a
+   writer), not full read/write. Route to
    **creating-secrets-using-best-practices**. Exit: no plaintext secrets in
    the tree.
-8. **Final synth and record.** Synthesize the whole stack once more, then write
+8. **Add unit tests for the logic you wrote.** At minimum: every auth or validation branch
+   (for example a valid, an invalid and a missing signature), the happy path, and malformed input, plus an
+   IaC assertion test (CDK `Template.fromStack` or cfn-guard) for removal policies, auth type and IAM scope.
+   Exit: the test command runs green and is recorded in `build.md`.
+9. **Final synth and record.** Synthesize the whole stack once more, then write
    `.aws-sdlc/build.md` from the template: what was built, the resource list,
    the IaC tool, and the exact command to synth. Exit: `build.md` exists with
    `next: aws-verify`.
@@ -98,6 +103,16 @@ Pick by what the signal commits to; full table with reasons in
 
 Write [.aws-sdlc/build.md](assets/build-template.md) using the bundled template.
 It feeds **aws-verify**.
+
+## Using the AWS MCP Server
+
+This plugin configures the AWS MCP Server. Prefer its tools over the local AWS CLI when they are available:
+
+- `aws___search_documentation`, `aws___read_documentation`, `aws___get_regional_availability`, `aws___list_regions`: live facts (limits, pricing, regions, new launches). No credentials needed.
+- `aws___run_script`: sandboxed Python with `await call_boto3(service_name=..., operation_name=...)` (see the tool description for parameters) under the user's IAM credentials. Every call is logged in CloudTrail and carries the `aws:ViaAWSMCPService` / `aws:CalledViaAWSMCP` condition keys, so agent actions stay auditable.
+- `aws___retrieve_skill(skill_name=...)`: load a routed skill that is not installed locally (pass `file="references/..."` for its reference files).
+
+Use the documentation tools for current API shapes and new features. Building writes files, not resources: do not create resources here; `aws-deploy` does that. If the MCP server is not connected, fall back to the AWS CLI with the same read-only-by-default rule.
 
 ## Rules
 

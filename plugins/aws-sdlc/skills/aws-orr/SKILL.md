@@ -85,6 +85,16 @@ Each gap routes to the skill that owns the fix. Full table with reasons:
 Writes `.aws-sdlc/orr.md` from [assets/orr-template.md](assets/orr-template.md).
 `next: aws-deploy`. A blocked `orr.md` stops a production deploy.
 
+## Using the AWS MCP Server
+
+This plugin configures the AWS MCP Server. Prefer its tools over the local AWS CLI when they are available:
+
+- `aws___search_documentation`, `aws___read_documentation`, `aws___get_regional_availability`, `aws___list_regions`: live facts (limits, pricing, regions, new launches). No credentials needed.
+- `aws___run_script`: sandboxed Python with `await call_boto3(service_name=..., operation_name=...)` (see the tool description for parameters) under the user's IAM credentials. Every call is logged in CloudTrail and carries the `aws:ViaAWSMCPService` / `aws:CalledViaAWSMCP` condition keys, so agent actions stay auditable.
+- `aws___retrieve_skill(skill_name=...)`: load a routed skill that is not installed locally (pass `file="references/..."` for its reference files).
+
+Gather live evidence with read-only `aws___run_script` calls (describe/list/get only), batching related checks into one script per ORR area, and cite the API calls in each item's evidence. If the MCP server is not connected, fall back to the AWS CLI with the same read-only-by-default rule.
+
 ## Rules
 
 - **Recommend, don't mandate.** Where a gap has several fixes, give options with

@@ -6,6 +6,8 @@ inputs: []
 next: aws-build
 ---
 
+> Next step: invoke the `aws-build` skill. It reads this file. If the user asked for a specific phase, invoke that phase's skill instead.
+
 # Intent: <workload name>
 
 ## Summary
@@ -76,3 +78,11 @@ Reason: <why this tier; read by aws-orr to scale the readiness review>
 ## Open questions / assumptions
 
 - <anything unanswered, with the assumption made>
+
+## Sources
+
+Live documentation and availability checks behind the figures above (AWS MCP Server tool and URL).
+
+| Fact | Source |
+|---|---|
+| <for example, HTTP API price per million requests> | <docs URL> |

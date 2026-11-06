@@ -1,15 +1,12 @@
 ---
 name: aws-verify
 description: >-
-  Verify phase of the AWS SDLC lifecycle: run a pre-ship verification ladder
-  over what aws-build produced. Triggers: "verify", "is this ready to ship",
-  "lint/synth the stack", "check my IAM", "run the tests", "security scan",
-  "will this cost too much". Runs static checks (cdk synth, cfn-lint, cfn-guard,
-  IAM policy validation), security scans, unit / local-invoke / integration
-  tests, a cost estimate against the intent budget, and resilience checks, each
-  reported PASS / FAIL / SKIPPED with evidence. Reads .aws-sdlc/build.md, writes
-  .aws-sdlc/verify-report.md, hands off to aws-orr. Not for building code (use
-  aws-build) or the production readiness gate (use aws-orr).
+  Use whenever AWS infrastructure or application code needs checking before it ships, including "run the
+  verify phase", "verify", "is this ready to ship", "lint/synth the stack", "check my IAM", "run the tests",
+  "security scan", "will this cost too much", or any time .aws-sdlc/build.md exists and verification is next.
+  Runs a ladder of static checks, IAM and auth review, security scan, tests, cost vs budget and resilience,
+  each PASS/FAIL/SKIPPED with evidence. Writes .aws-sdlc/verify-report.md, hands off to aws-orr. Not for
+  building code (aws-build) or the production readiness gate (aws-orr).
 metadata:
   version: "1"
 ---
@@ -62,7 +59,8 @@ SKIPPED with the reason — never silently dropped. Record every rung.
    plugin). If neither is installed, run a local scanner (e.g. cfn-guard rule
    packs, cdk-nag) and say so. Exit: no unresolved high/critical findings.
 4. **Tests — unit.** Run the app's unit suite with the build's test command.
-   Exit: suite passes; record counts.
+   Exit: suite passes; record counts. No unit tests for auth or input-validation code is a FAIL (send it
+   back to aws-build), not a SKIPPED.
 5. **Tests — local invoke.** For serverless, `sam local invoke` against sample
    events. Route to **aws-serverless**. Exit: handlers return expected output
    locally.
@@ -105,8 +103,26 @@ Full table with reasons in [references/routing.md](references/routing.md).
 Write [.aws-sdlc/verify-report.md](assets/verify-report-template.md) using the
 bundled template. It feeds **aws-orr** (the production readiness gate).
 
+## Using the AWS MCP Server
+
+This plugin configures the AWS MCP Server. Prefer its tools over the local AWS CLI when they are available:
+
+- `aws___search_documentation`, `aws___read_documentation`, `aws___get_regional_availability`, `aws___list_regions`: live facts (limits, pricing, regions, new launches). No credentials needed.
+- `aws___run_script`: sandboxed Python with `await call_boto3(service_name=..., operation_name=...)` (see the tool description for parameters) under the user's IAM credentials. Every call is logged in CloudTrail and carries the `aws:ViaAWSMCPService` / `aws:CalledViaAWSMCP` condition keys, so agent actions stay auditable.
+- `aws___retrieve_skill(skill_name=...)`: load a routed skill that is not installed locally (pass `file="references/..."` for its reference files).
+
+Use `aws___run_script` for read-only checks such as `accessanalyzer validate_policy`, quota lookups (`service-quotas`), and inspecting a dev stack after an integration test. Local tools (`cdk synth`, `cfn-lint`, unit tests) still run in the shell. If the MCP server is not connected, fall back to the AWS CLI with the same read-only-by-default rule.
+
 ## Rules
 
+- **Unauthenticated access to non-public data is a FAIL**, whatever intent.md assumed. Check every
+  endpoint (Function URL `AuthType`, API Gateway authorizers, S3 bucket policies) and record the auth model
+  per route; a route that serves stored data with no auth fails the security rung.
+- **Never put a secret value in the transcript, a shell command line, or the report.** An integration
+  test that needs a secret (for example to sign a webhook) reads it at runtime inside a script and uses it
+  without printing it. Do not call `GetSecretValue` through `aws___run_script` to see the value.
+- **Install a missing linter before skipping it** when it is a one-liner (`uvx cfn-lint`, `npx cdk-nag`,
+  `pip install cfn-lint`). SKIPPED means it could not run, not that it was not installed.
 - **Every rung is PASS, FAIL, or SKIPPED with evidence** (the command and an
   output summary). No rung is dropped silently; "could not run" is SKIPPED with
   a reason.

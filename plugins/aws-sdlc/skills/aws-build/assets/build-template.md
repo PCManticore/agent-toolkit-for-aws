@@ -6,6 +6,8 @@ inputs: [intent.md]
 next: aws-verify
 ---
 
+> Next step: invoke the `aws-verify` skill. It reads this file. If the user asked for a specific phase, invoke that phase's skill instead.
+
 # Build record
 
 ## Summary

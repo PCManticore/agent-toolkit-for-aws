@@ -1,6 +1,12 @@
 ---
 name: aws-deploy
-description: Runs the deploy phase — environments, change set / diff preview, staged rollout, rollback plan, and CI/CD pipeline — after verify and ORR. Reads verify-report.md and orr.md; refuses a production deploy when orr.md is missing or blocked (non-prod deploys proceed with a warning). Previews every change and requires explicit user confirmation before any mutating call. Triggers: "deploy", "ship it", "release to prod", "roll out", "change set", "cut-over". Writes .aws-sdlc/deploy-record.md; next is aws-maintain. Not the CI/CD service skill — this is the phase; for CodePipeline/CodeBuild/CodeDeploy setup it routes to aws-deployment. Not for building (aws-build) or the readiness gate (aws-orr).
+description: >-
+  Use whenever an AWS workload is being deployed or released to any environment, including "run the deploy
+  phase", "deploy", "ship it", "release to prod", "roll out", "change set", "cut-over". Deploy phase:
+  environments, diff or change-set preview, staged rollout, rollback plan, post-deploy smoke check. Refuses a
+  production deploy while .aws-sdlc/orr.md is missing or blocked; non-prod proceeds with a warning. Writes
+  .aws-sdlc/deploy-record.md. For CodePipeline/CodeBuild/CodeDeploy setup it routes to aws-deployment, the
+  CI/CD service skill. Not for building (aws-build) or the readiness gate (aws-orr).
 metadata:
   version: "1"
 ---
@@ -72,6 +78,16 @@ Full table with reasons: [references/routing.md](references/routing.md).
 
 Writes `.aws-sdlc/deploy-record.md` from
 [assets/deploy-record-template.md](assets/deploy-record-template.md). `next: aws-maintain`.
+
+## Using the AWS MCP Server
+
+This plugin configures the AWS MCP Server. Prefer its tools over the local AWS CLI when they are available:
+
+- `aws___search_documentation`, `aws___read_documentation`, `aws___get_regional_availability`, `aws___list_regions`: live facts (limits, pricing, regions, new launches). No credentials needed.
+- `aws___run_script`: sandboxed Python with `await call_boto3(service_name=..., operation_name=...)` (see the tool description for parameters) under the user's IAM credentials. Every call is logged in CloudTrail and carries the `aws:ViaAWSMCPService` / `aws:CalledViaAWSMCP` condition keys, so agent actions stay auditable.
+- `aws___retrieve_skill(skill_name=...)`: load a routed skill that is not installed locally (pass `file="references/..."` for its reference files).
+
+Preview with read-only calls (`describe_change_set`, `get_template`, `describe_stacks`) through `aws___run_script`. Run the deploy itself with the IaC tool's CLI (`cdk deploy`, `sam deploy`, `aws cloudformation deploy`) after the user confirms. Smoke-check through `aws___run_script` and record the API calls in `deploy-record.md`. If the MCP server is not connected, fall back to the AWS CLI with the same read-only-by-default rule.
 
 ## Rules
 

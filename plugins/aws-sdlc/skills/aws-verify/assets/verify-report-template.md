@@ -6,6 +6,8 @@ inputs: [build.md]
 next: aws-orr
 ---
 
+> Next step: invoke the `aws-orr` skill. It reads this file. If the user asked for a specific phase, invoke that phase's skill instead.
+
 # Verify report
 
 ## Summary

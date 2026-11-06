@@ -6,6 +6,8 @@ inputs: [verify-report.md, orr.md]
 next: aws-maintain
 ---
 
+> Next step: invoke the `aws-maintain` skill. It reads this file. If the user asked for a specific phase, invoke that phase's skill instead.
+
 # Deploy record — <workload name>
 
 - **Target environment:** <dev | staging | prod>

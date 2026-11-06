@@ -76,6 +76,7 @@ Scoring: **GREEN** evidence shows it is met · **YELLOW** partial or planned (ne
 | ORR-SEC-3 | I | Are secrets in Secrets Manager, not in code or env plaintext? | Repo scan / `aws secretsmanager list-secrets` | No hardcoded secrets; references only | `aws-security` |
 | ORR-SEC-4 | C | Is CloudTrail on, ideally multi-region? | `aws cloudtrail describe-trails` | A multi-region trail logging management events | `setting-up-cloudtrail-multi-region` |
 | ORR-SEC-5 | X | Is there a current threat model? | Threat model doc / link | Threats enumerated with mitigations | `aws-security` |
+| ORR-SEC-6 | P | Does every endpoint that returns non-public data require authentication? | Function URL `AuthType`, API Gateway authorizers, bucket policies | Each route has an enforced auth model; nothing relies on an unshared URL | `aws-iam`, `aws-security` |
 
 ## Dependencies
 

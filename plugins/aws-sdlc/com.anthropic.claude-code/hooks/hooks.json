@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'python3 \"${CLAUDE_PLUGIN_ROOT}/com.anthropic.claude-code/hooks/sdlc-context.py\" 2>/dev/null || python \"${CLAUDE_PLUGIN_ROOT}/com.anthropic.claude-code/hooks/sdlc-context.py\" 2>/dev/null || true'",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
