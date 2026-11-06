@@ -51,6 +51,6 @@ of Security, Cost Optimization, and Reliability. Keep each practice tied to a lo
 
 ## Readiness drift
 
-- Re-run `aws-orr` on a schedule and after major changes; a passing ORR decays as the workload and
+- Re-run `aws-readiness` on a schedule and after major changes; a passing readiness review decays as the workload and
   its dependencies change.
-- Scale the depth by criticality from `intent.md` - do not drown a prototype in full ORR items.
+- Scale the depth by criticality from `intent.md` - do not drown a prototype in full readiness review items.

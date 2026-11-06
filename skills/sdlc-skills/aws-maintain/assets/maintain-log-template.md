@@ -3,10 +3,10 @@ phase: maintain
 status: draft
 updated: <ISO date>
 inputs: [deploy-record.md, intent.md]
-next: aws-orr
+next: aws-readiness
 ---
 
-> Next step: invoke the `aws-orr` skill. It reads this file. If the user asked for a specific phase, invoke that phase's skill instead.
+> Next step: invoke the `aws-readiness` skill. It reads this file. If the user asked for a specific phase, invoke that phase's skill instead.
 
 # Maintain log
 
@@ -21,8 +21,8 @@ Append one dated entry per loop run. Newest first. Keep evidence verbatim.
 - **Recommendation:** <options with trade-offs, one recommendation, why>
 - **Action taken:** <read-only analysis | fix confirmed and applied | routed>
 - **Routed to:** <skill name(s), e.g. aws-investigation, aws-billing-and-cost-management>
-- **Follow-on phase:** <none | aws-intent (architecture change) | aws-build -> aws-verify -> aws-deploy (code/config fix) | re-run aws-orr (readiness drift)>
-- **ORR diff:** <new RED/YELLOW items vs last orr.md, or n/a>
+- **Follow-on phase:** <none | aws-intent (architecture change) | aws-build -> aws-verify -> aws-deploy (code/config fix) | re-run aws-readiness (readiness drift)>
+- **readiness review diff:** <new RED/YELLOW items vs last readiness.md, or n/a>
 
 ## <YYYY-MM-DD> - <loop> - <short title>
 
@@ -34,4 +34,4 @@ Append one dated entry per loop run. Newest first. Keep evidence verbatim.
 - **Action taken:**
 - **Routed to:**
 - **Follow-on phase:**
-- **ORR diff:**
+- **readiness review diff:**

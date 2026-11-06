@@ -21,10 +21,10 @@ Ask about an NFR only when it moves the decision. The ones that usually do:
 
 ## Set the criticality tier deliberately
 
-The tier is read by `aws-orr` to scale the readiness review, so a prototype is not drowned in checks and a
+The tier is read by `aws-readiness` to scale the readiness review, so a prototype is not drowned in checks and a
 critical workload is not under-reviewed.
 
-| Tier | Meaning | Review depth signal for ORR |
+| Tier | Meaning | Review depth signal for readiness review |
 |---|---|---|
 | `prototype` | Throwaway, demo, spike. Short-lived, no real users. | Minimal: basic cost guardrail and teardown. |
 | `internal` | Internal tool, bounded blast radius, employees only. | Moderate: observability, backups, least-privilege. |

@@ -1,6 +1,6 @@
-# ORR best practices
+# readiness review best practices
 
-The ORR covers the Well-Architected **Operational Excellence** and **Reliability** slice that must
+The readiness review covers the Well-Architected **Operational Excellence** and **Reliability** slice that must
 hold before production traffic. Keep it concise; defer depth to the routed skills.
 
 ## Operational Excellence
@@ -37,10 +37,10 @@ hold before production traffic. Keep it concise; defer depth to the routed skill
 ## Running the review
 
 - **Scale to the workload.** A prototype gets the ~8 core items; a critical workload gets the full
-  list. Drowning a spike in 60 items trains people to ignore the ORR.
+  list. Drowning a spike in 60 items trains people to ignore the readiness review.
 - **Score with evidence.** GREEN needs a file or a read-only `describe`/`list` behind it. YELLOW is a
   real gap with an owner and a date, not a shrug. Any RED blocks the production deploy.
 - **Ground changing facts in live docs.** Quotas, limits, regional availability, and new features
   change — confirm them through the AWS MCP Server, not memory.
 - **Re-run on drift.** Readiness decays. `aws-maintain` re-runs this skill and diffs against the last
-  `orr.md` to catch regressions.
+  `readiness.md` to catch regressions.

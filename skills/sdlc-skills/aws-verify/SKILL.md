@@ -5,8 +5,8 @@ description: >-
   verify phase", "verify", "is this ready to ship", "lint/synth the stack", "check my IAM", "run the tests",
   "security scan", "will this cost too much", or any time .aws-sdlc/build.md exists and verification is next.
   Runs a ladder of static checks, IAM and auth review, security scan, tests, cost vs budget and resilience,
-  each PASS/FAIL/SKIPPED with evidence. Writes .aws-sdlc/verify-report.md, hands off to aws-orr. Not for
-  building code (aws-build) or the production readiness gate (aws-orr).
+  each PASS/FAIL/SKIPPED with evidence. Writes .aws-sdlc/verify-report.md, hands off to aws-readiness. Not for
+  building code (aws-build) or the production readiness gate (aws-readiness).
 metadata:
   version: "1"
 ---
@@ -35,7 +35,7 @@ Server for grounding limits, pricing, and regional availability in live docs.
 
 - Writing or fixing the IaC and app code → **aws-build**.
 - The production readiness gate (ownership, on-call, alarms, runbooks) →
-  **aws-orr**.
+  **aws-readiness**.
 
 ## Workflow
 
@@ -81,7 +81,7 @@ SKIPPED with the reason — never silently dropped. Record every rung.
 10. **Record and hand off.** Write `.aws-sdlc/verify-report.md` from the
     template: every rung with PASS/FAIL/SKIPPED, the command, and an output
     summary. Any FAIL on a required rung → `status: blocked`. Exit: report
-    exists with `next: aws-orr`.
+    exists with `next: aws-readiness`.
 
 ## Routing
 
@@ -101,7 +101,7 @@ Full table with reasons in [references/routing.md](references/routing.md).
 ## Artifact
 
 Write [.aws-sdlc/verify-report.md](assets/verify-report-template.md) using the
-bundled template. It feeds **aws-orr** (the production readiness gate).
+bundled template. It feeds **aws-readiness** (the production readiness gate).
 
 ## Using the AWS MCP Server
 
@@ -115,7 +115,7 @@ Use `aws___run_script` for read-only checks such as `accessanalyzer validate_pol
 
 ## Rules
 
-- **End every reply with the next step.** Last line, exactly this shape: `Next → aws-orr: say "Are we ready for production?"`. If this phase is blocked or failed, name the fix instead (for example `Next → fix the 3 RED items, then re-run the review`).
+- **End every reply with the next step.** Last line, exactly this shape: `Next → aws-readiness: say "Are we ready for production?"`. If this phase is blocked or failed, name the fix instead (for example `Next → fix the 3 RED items, then re-run the review`).
 - **Unauthenticated access to non-public data is a FAIL**, whatever intent.md assumed. Check every
   endpoint (Function URL `AuthType`, API Gateway authorizers, S3 bucket policies) and record the auth model
   per route; a route that serves stored data with no auth fails the security rung.
@@ -138,5 +138,5 @@ Use `aws___run_script` for read-only checks such as `accessanalyzer validate_pol
   rung, and name the skill that would go deeper.
 - **Scale depth to criticality** from intent.md: a prototype needs synth, unit
   tests, and a cost sanity check; a critical system needs the full ladder.
-- **A FAIL on a required rung blocks the report** so aws-orr and aws-deploy see
+- **A FAIL on a required rung blocks the report** so aws-readiness and aws-deploy see
   the gate.

@@ -6,7 +6,7 @@ confirm limits and pricing against live AWS docs when precision matters.
 ## Infrastructure as code
 
 - Keep every resource in IaC from the first commit. No click-ops that IaC does
-  not know about — it causes drift the verify and ORR phases cannot see.
+  not know about — it causes drift the verify and readiness review phases cannot see.
 - Synthesize after every change. A stack that has not synthesized since its last
   edit is not buildable; treat a failed synth as a stop-the-line event.
 - Build in small, coherent increments (one component or one wiring per change),

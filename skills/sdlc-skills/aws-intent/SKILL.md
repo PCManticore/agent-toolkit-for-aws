@@ -23,7 +23,7 @@ code — that is `aws-build`. It does not pick low-level service options itself 
 the domain router that owns it.
 
 The criticality tier set here (`prototype` / `internal` / `customer-facing` / `critical`) is read later by
-`aws-orr` to scale the readiness review, so capture it deliberately.
+`aws-readiness` to scale the readiness review, so capture it deliberately.
 
 **Works best with** the aws-core plugin installed (domain skills) and the AWS MCP Server (live docs and
 sandboxed, audited AWS calls).
@@ -125,7 +125,7 @@ Use the documentation tools for limits, pricing and regional availability of eve
   here.
 - **Ask little.** At most three or four questions, only for facts that change the architecture; state
   assumptions for the rest and never reply with questions alone.
-- **Set the criticality tier explicitly** — `aws-orr` scales its review by it.
+- **Set the criticality tier explicitly** — `aws-readiness` scales its review by it.
 - **Ground facts in live docs.** For limits, pricing, regional availability, or newly launched features,
   use the AWS MCP Server tools (`search_documentation`, `read_documentation`, `get_regional_availability`)
   rather than training data.

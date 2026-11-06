@@ -1,6 +1,6 @@
-# ORR routing
+# readiness review routing
 
-When an item is YELLOW or RED, route the fix to the skill that owns the domain. ORR does not
+When an item is YELLOW or RED, route the fix to the skill that owns the domain. readiness review does not
 re-derive these — it points at them. Skill names below are verified to exist in this repo.
 Note the plugin for any skill outside aws-core.
 

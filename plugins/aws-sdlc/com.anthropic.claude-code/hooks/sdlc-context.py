@@ -5,7 +5,7 @@ When the project has a .aws-sdlc/ directory, inject a short note naming the
 artifacts that exist, the phase the newest artifact points to, and an instruction
 to load the matching phase skill before acting. Without this, agents that already
 "know" how to write CDK or deploy a stack skip the phase skill and its gates
-(for example the ORR gate in aws-deploy).
+(for example the readiness review gate in aws-deploy).
 
 Prints nothing (no-op) when .aws-sdlc/ does not exist. Never fails the prompt.
 """
@@ -15,7 +15,7 @@ import re
 import sys
 from pathlib import Path
 
-PHASES = ["intent", "build", "verify-report", "orr", "deploy-record", "maintain-log"]
+PHASES = ["intent", "build", "verify-report", "readiness", "deploy-record", "maintain-log"]
 
 
 def read_header(path: Path) -> dict:
@@ -51,19 +51,19 @@ def main() -> None:
     newest = max(present, key=lambda item: item[1])
     summary = ", ".join(f"{n}.md ({h.get('status', '?')})" for n, _, h in present)
     next_skill = newest[2].get("next", "aws-sdlc")
-    orr = next((h for n, _, h in present if n == "orr"), None)
+    ready = next((h for n, _, h in present if n == "readiness"), None)
 
     lines = [
         "This project follows the AWS SDLC lifecycle (aws-sdlc plugin).",
         f"Artifacts in .aws-sdlc/: {summary}.",
         f"The newest artifact ({newest[0]}.md) points to the `{next_skill}` skill.",
         "Before writing code, running AWS commands, or answering, load the phase skill that matches "
-        "the user's request (aws-intent, aws-build, aws-verify, aws-orr, aws-deploy, aws-maintain; "
+        "the user's request (aws-intent, aws-build, aws-verify, aws-readiness, aws-deploy, aws-maintain; "
         f"use `{next_skill}` if the request is to continue) and follow its workflow and artifact contract.",
         "End the reply with one line: `Next → <phase skill>: say \"<example prompt>\"`.",
     ]
-    if orr is None or orr.get("status") == "blocked":
-        lines.append("Production deploys are gated: orr.md is " + ("missing." if orr is None else "blocked."))
+    if ready is None or ready.get("status") == "blocked":
+        lines.append("Production deploys are gated: readiness.md is " + ("missing." if ready is None else "blocked."))
 
     if "--plain" in sys.argv:  # Kiro CLI hooks add stdout to context as-is
         print("\n".join(lines))

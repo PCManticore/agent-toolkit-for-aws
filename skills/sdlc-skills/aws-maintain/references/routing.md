@@ -41,7 +41,7 @@ to exist in this repo. Plugin is noted when the skill is not in aws-core.
 
 | Signal | Route to | Plugin | Why |
 |---|---|---|---|
-| Periodic review, or a major change landed | **aws-orr** | aws-sdlc | Re-run the Operational Readiness Review and diff against the last `orr.md`; new RED/YELLOW items become maintain findings. |
+| Periodic review, or a major change landed | **aws-readiness** | aws-sdlc | Re-run the Operational Readiness Review and diff against the last `readiness.md`; new RED/YELLOW items become maintain findings. |
 
 ## Phase hand-off (not a skill lookup)
 

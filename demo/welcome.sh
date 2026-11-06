@@ -12,17 +12,18 @@ cat <<EOF
   ${W}AWS best practices for every phase of building software, in any agent.${R}
 
   ${D}Describe what you want to build. The agent finds the phase and applies the AWS
-  guidance for it: Well-Architected, least-privilege IAM, staged rollouts, ORRs.${R}
+  guidance for it: Well-Architected, least-privilege IAM, staged rollouts, readiness reviews.${R}
 
-    ${O}intent${R} ${D}─▶${R} ${O}build${R} ${D}─▶${R} ${O}verify${R} ${D}─▶${R} ${O}orr${R} ${D}─▶${R} ${O}deploy${R} ${D}─▶${R} ${O}maintain${R}
-${D}       ▲                          ▲                   │
-       └────── new feature ───────┴─ readiness drift ─┘${R}
+    ${O}intent${R} ${D}─▶${R} ${O}build${R} ${D}─▶${R} ${O}verify${R} ${D}─▶${R} ${O}readiness${R} ${D}─▶${R} ${O}deploy${R} ${D}─▶${R} ${O}maintain${R}
+${D}       ▲                             ▲                      │
+       └──────── new feature ────────┴── readiness drift ───┘${R}
+
 
 EOF
 phase "intent"   "Idea → requirements → AWS architecture options with trade-offs," "live pricing and regional availability, one recommendation"
 phase "build"    "AWS CDK, CloudFormation or SAM · AWS SDKs · least-privilege IAM" "secrets in Secrets Manager · unit tests"
 phase "verify"   "cdk synth & cfn-lint · IAM Access Analyzer · security scans" "tests against a dev stack · cost against your budget"
-phase "orr"      "Operational readiness: CloudWatch alarms, runbooks, rollback, multi-AZ," "backups, CloudTrail, budgets. Any RED item blocks production"
+phase "readiness"      "Operational readiness: CloudWatch alarms, runbooks, rollback, multi-AZ," "backups, CloudTrail, budgets. Any RED item blocks production"
 phase "deploy"   "Change-set preview · staged rollout (Lambda aliases, CodeDeploy," "ECS blue/green) · written rollback plan · smoke checks"
 phase "maintain" "Triage from CloudWatch metrics, logs and X-Ray traces · alarm gaps" "Cost Explorer · runtime and engine upgrades"
 cat <<EOF

@@ -23,10 +23,10 @@ no artifacts of its own and does not do the phase work itself.
 The lifecycle has six phases and loops:
 
 ```
-intent → build → verify → orr → deploy → maintain
-                                            │
-                      new feature ──────────┘  (back to intent)
-                      readiness drift ──────┘  (back to orr)
+intent → build → verify → readiness → deploy → maintain
+                                                  │
+                      new feature ────────────────┘  (back to intent)
+                      readiness drift ────────────┘  (back to readiness)
 ```
 
 Each phase skill reads the artifact the previous phase wrote under `.aws-sdlc/` in the user's project
@@ -57,8 +57,8 @@ Do not use when the request is already scoped to one phase or one domain — rou
    - No artifacts and a "what should I build" request → `aws-intent`.
    - `intent.md` exists, user wants code → `aws-build`.
    - Code exists, user wants to check it before shipping → `aws-verify`.
-   - User asks "is this production ready" or wants the gate → `aws-orr`.
-   - `orr.md` is `complete` and user wants to ship → `aws-deploy`.
+   - User asks "is this production ready" or wants the gate → `aws-readiness`.
+   - `readiness.md` is `complete` and user wants to ship → `aws-deploy`.
    - Live workload, user asks about alarms, cost, incidents, upgrades → `aws-maintain`.
 4. **Show the map and hand off.** Tell the user the detected phase, show the one-line lifecycle map, name
    the phase skill, and hand off. If that skill is not installed, say so and give the phase's first step
@@ -77,7 +77,7 @@ Phase skills are part of this `aws-sdlc` plugin. Short version below; full signa
 | "what should I build", requirements, architecture choice | `aws-intent` | `.aws-sdlc/intent.md` |
 | "write the code / IaC", scaffold, implement | `aws-build` | `.aws-sdlc/build.md` |
 | "check before shipping", lint, test, least-privilege, cost vs budget | `aws-verify` | `.aws-sdlc/verify-report.md` |
-| "production ready?", readiness gate | `aws-orr` | `.aws-sdlc/orr.md` |
+| "production ready?", readiness gate | `aws-readiness` | `.aws-sdlc/readiness.md` |
 | "deploy", rollout, change set, rollback, pipeline | `aws-deploy` | `.aws-sdlc/deploy-record.md` |
 | "operate", alarms, incident, cost, upgrades | `aws-maintain` | `.aws-sdlc/maintain-log.md` |
 
@@ -91,7 +91,7 @@ every phase skill writes is:
 
 ```markdown
 ---
-phase: intent|build|verify|orr|deploy|maintain
+phase: intent|build|verify|readiness|deploy|maintain
 status: draft|complete|blocked
 updated: <ISO date>
 inputs: [list of upstream artifacts read]

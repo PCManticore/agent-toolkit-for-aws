@@ -2,7 +2,7 @@
 phase: deploy
 status: draft
 updated: <ISO date>
-inputs: [verify-report.md, orr.md]
+inputs: [verify-report.md, readiness.md]
 next: aws-maintain
 ---
 
@@ -12,8 +12,8 @@ next: aws-maintain
 
 - **Target environment:** <dev | staging | prod>
 - **Target account / stack:** <account id or alias · stack/app name>
-- **ORR gate:** <complete | blocked | absent (non-prod warning)>
-  - Production requires a complete `orr.md`. A blocked or missing ORR blocks prod.
+- **readiness review gate:** <complete | blocked | absent (non-prod warning)>
+  - Production requires a complete `readiness.md`. A blocked or missing readiness review blocks prod.
 - **Artifact / version deployed:** <image digest, version, or commit>
 
 ## Change preview

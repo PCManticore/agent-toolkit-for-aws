@@ -70,8 +70,8 @@ critical system needs the full ladder including resilience and a
 Well-Architected review. Do not drown a prototype in checks it does not need,
 and do not ship a critical system on a prototype's ladder.
 
-## What to hand to aws-orr
+## What to hand to aws-readiness
 
 verify-report.md must give the readiness gate what it needs: each rung's verdict
 and evidence, any blocking FAILs, the cost estimate vs budget, and the resilience
-findings. aws-orr turns these into GREEN/YELLOW/RED items.
+findings. aws-readiness turns these into GREEN/YELLOW/RED items.

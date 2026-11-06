@@ -32,7 +32,7 @@ Works best with the aws-core plugin installed (domain skills) and the AWS MCP Se
 - Deciding what to build or re-architecting -> **aws-intent**.
 - Writing application code or IaC -> **aws-build**.
 - Pre-ship synth/lint/test/cost checks -> **aws-verify**.
-- The production readiness gate -> **aws-orr**.
+- The production readiness gate -> **aws-readiness**.
 - Rolling out a change -> **aws-deploy**.
 
 ## Workflow
@@ -82,7 +82,7 @@ Exit: findings recorded with evidence; fixes proposed (not applied) unless confi
 
 ### 4. Re-run readiness and route the change
 
-- Periodically, or after any major change, re-run **aws-orr** and diff against the last `orr.md`.
+- Periodically, or after any major change, re-run **aws-readiness** and diff against the last `readiness.md`.
   New RED or YELLOW items are maintain findings.
 - A fix that changes architecture loops back to **aws-intent**.
 - A code or config fix goes **aws-build -> aws-verify -> aws-deploy**.
@@ -106,7 +106,7 @@ Signal -> existing skill. Full table with the "why": [references/routing.md](ref
 | Cost | **aws-billing-and-cost-management** (core) |
 | Security posture | **aws-security** (core) |
 | IAM least-privilege | **aws-iam** (core) |
-| Readiness drift | **aws-orr** (sdlc) |
+| Readiness drift | **aws-readiness** (sdlc) |
 
 If a routed skill is not installed, still give the phase answer and name the skill that would go
 deeper.
@@ -129,7 +129,7 @@ Pull metrics, logs and traces with read-only `aws___run_script` calls (CloudWatc
 
 ## Rules
 
-- **End every reply with the next step.** Last line, exactly this shape: `Next → aws-orr or aws-intent: say "Re-run the readiness review. (or describe the next feature)"`. If this phase is blocked or failed, name the fix instead (for example `Next → fix the 3 RED items, then re-run the review`).
+- **End every reply with the next step.** Last line, exactly this shape: `Next → aws-readiness or aws-intent: say "Re-run the readiness review. (or describe the next feature)"`. If this phase is blocked or failed, name the fix instead (for example `Next → fix the 3 RED items, then re-run the review`).
 - **Recommend, don't mandate.** Give options with trade-offs, make one recommendation, say why.
 - **Route, don't duplicate.** Hand off to the owning skill rather than re-deriving its content.
 - **Evidence first.** In triage, read metrics/logs/traces before forming a cause; label anything
@@ -140,5 +140,5 @@ Pull metrics, logs and traces with read-only `aws___run_script` calls (CloudWatc
   newly launched features come from the AWS MCP Server tools (`search_documentation`,
   `read_documentation`, `get_regional_availability`), not training data.
 - **Loop back, don't patch blind.** Architecture change -> aws-intent; code/config fix ->
-  aws-build -> aws-verify -> aws-deploy; readiness drift -> re-run aws-orr.
+  aws-build -> aws-verify -> aws-deploy; readiness drift -> re-run aws-readiness.
 - Best practices for this phase: [references/best-practices.md](references/best-practices.md).

@@ -2,7 +2,7 @@
 # Rehearse one demo step headlessly through the demo launcher (same isolation and permissions as live).
 #
 # Usage: tools/dev/rehearse.sh <demo-dir> <step> [extra prompt text]
-#   step: 0-start | 1-intent | 2-build | 3-verify | 4-orr | 5-deploy | 5b-fix-and-deploy | 6-maintain
+#   step: 0-start | 1-intent | 2-build | 3-verify | 4-readiness | 5-deploy | 5b-fix-and-deploy | 6-maintain
 # Runs in the background; logs to <demo-dir>/.rehearsal/<step>.jsonl. Summarize with
 #   python3 tools/dev/summarize_run.py <demo-dir>/.rehearsal/<step>.jsonl
 set -euo pipefail

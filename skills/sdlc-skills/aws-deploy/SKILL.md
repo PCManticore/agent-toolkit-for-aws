@@ -4,9 +4,9 @@ description: >-
   Use whenever an AWS workload is being deployed or released to any environment, including "run the deploy
   phase", "deploy", "ship it", "release to prod", "roll out", "change set", "cut-over". Deploy phase:
   environments, diff or change-set preview, staged rollout, rollback plan, post-deploy smoke check. Refuses a
-  production deploy while .aws-sdlc/orr.md is missing or blocked; non-prod proceeds with a warning. Writes
+  production deploy while .aws-sdlc/readiness.md is missing or blocked; non-prod proceeds with a warning. Writes
   .aws-sdlc/deploy-record.md. For CodePipeline/CodeBuild/CodeDeploy setup it routes to aws-deployment, the
-  CI/CD service skill. Not for building (aws-build) or the readiness gate (aws-orr).
+  CI/CD service skill. Not for building (aws-build) or the readiness gate (aws-readiness).
 metadata:
   version: "1"
 ---
@@ -26,22 +26,22 @@ All guidance also works with standard AWS CLI access.
 
 - Deploying a workload to dev, staging, or production.
 - Setting up or changing the rollout strategy or the pipeline that deploys it.
-- Standalone: if `verify-report.md` or `orr.md` are missing, ask for the target environment and
+- Standalone: if `verify-report.md` or `readiness.md` are missing, ask for the target environment and
   confirm readiness instead of refusing — but hold the production gate below.
 
 ## When not to use
 
 - Writing IaC or app code — use `aws-build`.
-- The readiness gate itself — use `aws-orr`.
+- The readiness gate itself — use `aws-readiness`.
 - Deep CodePipeline/CodeBuild/CodeDeploy configuration — route to `aws-deployment`.
 
 ## Workflow
 
-1. **Read inputs and set the target.** Load `.aws-sdlc/verify-report.md` and `.aws-sdlc/orr.md`.
+1. **Read inputs and set the target.** Load `.aws-sdlc/verify-report.md` and `.aws-sdlc/readiness.md`.
    Confirm the target environment (dev / staging / prod). *Exit:* environment is fixed.
-2. **Gate on readiness (production only).** If target is prod and `orr.md` is missing or
-   `status: blocked`, **refuse** and point at `aws-orr` to close the RED items. Non-prod deploys
-   proceed with a warning when the ORR is absent. *Exit:* prod is allowed only with a complete ORR.
+2. **Gate on readiness (production only).** If target is prod and `readiness.md` is missing or
+   `status: blocked`, **refuse** and point at `aws-readiness` to close the RED items. Non-prod deploys
+   proceed with a warning when the readiness review is absent. *Exit:* prod is allowed only with a complete readiness review.
 3. **Confirm environment isolation.** Prefer separate AWS accounts per environment; at minimum a
    separate stack and state. Never deploy to prod from the same account state as dev by accident.
    *Exit:* the target account/stack is named and confirmed.
@@ -72,7 +72,7 @@ Full table with reasons: [references/routing.md](references/routing.md).
 | ECS service deploy config (blue/green, circuit breaker) | `aws-containers` | aws-core |
 | Deploy role is over-broad | `aws-iam` | aws-core |
 | Post-deploy alarms / dashboards to watch | `aws-observability` | aws-core |
-| Readiness is blocked or missing | `aws-orr` | aws-sdlc |
+| Readiness is blocked or missing | `aws-readiness` | aws-sdlc |
 
 ## Artifact
 
@@ -92,7 +92,7 @@ Preview with read-only calls (`describe_change_set`, `get_template`, `describe_s
 ## Rules
 
 - **End every reply with the next step.** Last line, exactly this shape: `Next → aws-maintain: say "How is it doing in production?"`. If this phase is blocked or failed, name the fix instead (for example `Next → fix the 3 RED items, then re-run the review`).
-- **Gate production on the ORR.** No prod deploy while `orr.md` is missing or blocked. Non-prod is
+- **Gate production on the readiness review.** No prod deploy while `readiness.md` is missing or blocked. Non-prod is
   allowed with an explicit warning.
 - **Preview before you apply.** Always show a diff or change set first; never apply blind.
 - **Confirm every mutation.** Get explicit user go-ahead before the first mutating AWS call, and

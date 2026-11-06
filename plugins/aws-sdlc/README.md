@@ -5,7 +5,7 @@ the agent starts from where you are in the software lifecycle and routes to serv
 needs depth.
 
 ```text
-aws-intent ─► aws-build ─► aws-verify ─► aws-orr ─► aws-deploy ─► aws-maintain
+aws-intent ─► aws-build ─► aws-verify ─► aws-readiness ─► aws-deploy ─► aws-maintain
      ▲                                      ▲                         │
      └──────────── new feature ─────────────┴──── readiness drift ────┘
 ```
@@ -16,9 +16,9 @@ aws-intent ─► aws-build ─► aws-verify ─► aws-orr ─► aws-deploy �
 | [aws-intent](skills/aws-intent/) | Intent | Requirements, non-functional requirements, criticality tier, 1–3 candidate architectures with trade-offs, one recommendation | `.aws-sdlc/intent.md` |
 | [aws-build](skills/aws-build/) | Build | IaC and app code from the intent, least-privilege IAM, secrets, small increments that synth | `.aws-sdlc/build.md` |
 | [aws-verify](skills/aws-verify/) | Verify | Static checks, IAM review, security scan, tests, cost vs budget, resilience; PASS/FAIL/SKIPPED with evidence | `.aws-sdlc/verify-report.md` |
-| [aws-orr](skills/aws-orr/) | Operational readiness | GREEN/YELLOW/RED review of ownership, alarms, runbooks, rollback, resilience, security, cost guardrails, scaled to criticality. Any RED blocks a production deploy | `.aws-sdlc/orr.md` |
-| [aws-deploy](skills/aws-deploy/) | Deploy | Environments, diff/change-set preview, staged rollout, rollback plan, CI/CD; refuses prod without a passing ORR | `.aws-sdlc/deploy-record.md` |
-| [aws-maintain](skills/aws-maintain/) | Maintain | Incident triage, observability gaps, cost, security and upgrades; periodic ORR re-runs | `.aws-sdlc/maintain-log.md` |
+| [aws-readiness](skills/aws-readiness/) | Operational readiness | GREEN/YELLOW/RED review of ownership, alarms, runbooks, rollback, resilience, security, cost guardrails, scaled to criticality. Any RED blocks a production deploy | `.aws-sdlc/readiness.md` |
+| [aws-deploy](skills/aws-deploy/) | Deploy | Environments, diff/change-set preview, staged rollout, rollback plan, CI/CD; refuses prod without a passing readiness review | `.aws-sdlc/deploy-record.md` |
+| [aws-maintain](skills/aws-maintain/) | Maintain | Incident triage, observability gaps, cost, security and upgrades; periodic readiness review re-runs | `.aws-sdlc/maintain-log.md` |
 
 ## Design rules
 
@@ -52,13 +52,13 @@ loaded on demand from the AWS MCP Server with `retrieve_skill`. Full run sheet: 
 | intent | *I want to build a photo wall for our team. Someone uploads a photo, we make a thumbnail, have AI write a caption, then wait up to 10 minutes for a moderator to approve it, otherwise reject it. Approved photos are posted and the team is notified once. Python, us-west-2, under $10/month.* |
 | build | *Build it. CDK in TypeScript, Python function code, stack SdlcDemoPhotos, tag project=sdlc-demo, nothing retained on delete. Add unit tests; don't deploy yet.* |
 | verify | *Verify it before we ship. Deploy a dev copy and run an approved upload and a rejected upload end to end.* |
-| orr | *We open this to the whole team next week. Are we operationally ready?* |
-| deploy | *Ship it to production as stack SdlcDemoPhotos.* (refused while the ORR is blocked) |
+| readiness | *We open this to the whole team next week. Are we operationally ready?* |
+| deploy | *Ship it to production as stack SdlcDemoPhotos.* (refused while the readiness review is blocked) |
 | maintain | *Some photos have been waiting for an hour and people say the same photo was announced twice. Triage it.* |
 
 Plain Claude Code without the demo workspace: `claude --plugin-dir plugins/aws-sdlc`, or
 `/plugin marketplace add PCManticore/agent-toolkit-for-aws` then `/plugin install aws-sdlc@agent-toolkit-for-aws`.
-`tools/dev/smoke-test.sh` checks that intent, ORR and maintain prompts reach the right phase skill.
+`tools/dev/smoke-test.sh` checks that intent, readiness review and maintain prompts reach the right phase skill.
 
 ## Skill sources
 

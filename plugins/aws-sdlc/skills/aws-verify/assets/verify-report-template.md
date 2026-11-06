@@ -3,10 +3,10 @@ phase: verify
 status: draft
 updated: <ISO date>
 inputs: [build.md]
-next: aws-orr
+next: aws-readiness
 ---
 
-> Next step: invoke the `aws-orr` skill. It reads this file. If the user asked for a specific phase, invoke that phase's skill instead.
+> Next step: invoke the `aws-readiness` skill. It reads this file. If the user asked for a specific phase, invoke that phase's skill instead.
 
 # Verify report
 
@@ -54,5 +54,5 @@ list is non-empty, `status` must be `blocked`.
 
 ## Next
 
-Hand off to **aws-orr** for the production readiness gate. aws-orr reads this
+Hand off to **aws-readiness** for the production readiness gate. aws-readiness reads this
 report plus intent.md and build.md.

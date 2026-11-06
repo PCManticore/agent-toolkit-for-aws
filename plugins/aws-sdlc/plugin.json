@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "aws-sdlc",
   "version": "0.1.0",
-  "description": "Lifecycle-first skills for building on AWS. One skill per SDLC phase - intent, build, verify, operational readiness review (ORR), deploy, and maintain - plus an entry router. Each phase runs a short workflow, hands off to the next phase through .aws-sdlc/ artifacts, and routes to the domain skills in aws-core (and other toolkit plugins) for service-level depth. Recommends options with trade-offs instead of prescribing services. Works best with the aws-core plugin installed.",
+  "description": "Lifecycle-first skills for building on AWS. One skill per SDLC phase - intent, build, verify, operational readiness review, deploy, and maintain - plus an entry router. Each phase runs a short workflow, hands off to the next phase through .aws-sdlc/ artifacts, and routes to the domain skills in aws-core (and other toolkit plugins) for service-level depth. Recommends options with trade-offs instead of prescribing services. Works best with the aws-core plugin installed.",
   "author": {
     "name": "Amazon Web Services"
   },
@@ -21,7 +21,7 @@
     "testing",
     "verification",
     "operational-readiness",
-    "orr",
+    "readiness",
     "deployment",
     "rollback",
     "operations",

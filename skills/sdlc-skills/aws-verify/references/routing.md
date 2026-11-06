@@ -50,8 +50,8 @@ Unit tests use the build's own test command (from build.md); no AWS skill needed
 
 ## Handoff
 
-The verify report hands off to **aws-orr**, the production readiness gate and the
-next phase in the aws-sdlc flow. aws-orr reads verify-report.md (plus intent.md
+The verify report hands off to **aws-readiness**, the production readiness gate and the
+next phase in the aws-sdlc flow. aws-readiness reads verify-report.md (plus intent.md
 and build.md) and decides GREEN/YELLOW/RED readiness.
 
 ## Rule

@@ -1,18 +1,17 @@
 ---
-name: aws-orr
+name: aws-readiness
 description: >-
   Use whenever someone asks if an AWS workload is ready for production, launch or go-live, including
-  "are we operationally ready", "ready to launch", "what should we check before prod", "ORR",
-  "production readiness", "go-live checklist". Runs an Operational Readiness Review: scores ownership,
+  "are we operationally ready", "ready to launch", "what should we check before prod", "production readiness", "go-live checklist". Runs an Operational Readiness Review: scores ownership,
   observability, alarming, runbooks, deployment safety, resilience, security, dependencies, load testing and
-  cost guardrails GREEN/YELLOW/RED with evidence, scaled to the workload's criticality. Writes .aws-sdlc/orr.md;
+  cost guardrails GREEN/YELLOW/RED with evidence, scaled to the workload's criticality. Writes .aws-sdlc/readiness.md;
   any RED blocks aws-deploy from production. Not for a full architecture review (aws-well-architected-review)
   or the deploy itself (aws-deploy).
 metadata:
   version: "1"
 ---
 
-# AWS ORR (Operational Readiness Review)
+# AWS readiness review (Operational Readiness Review)
 
 Gate a workload before its first production deploy, and re-check it as it drifts.
 This skill scores readiness against a checklist, grounds each score in evidence,
@@ -56,12 +55,12 @@ checks. All guidance also works with standard AWS CLI access.
 4. **Route the gaps.** For each YELLOW or RED, name the skill that closes it
    (see [references/routing.md](references/routing.md)) and, for YELLOW, record an
    explicit owner and target date. *Exit:* each gap has a route and, if YELLOW, an owner+date.
-5. **Write the verdict.** Fill [assets/orr-template.md](assets/orr-template.md) into
-   `.aws-sdlc/orr.md`. Set `status: blocked` if any item is RED, else `complete`.
-   *Exit:* `orr.md` written with a header block and per-item scores.
-6. **Re-run mode (from maintain).** If an `orr.md` already exists, diff against it:
+5. **Write the verdict.** Fill [assets/readiness-template.md](assets/readiness-template.md) into
+   `.aws-sdlc/readiness.md`. Set `status: blocked` if any item is RED, else `complete`.
+   *Exit:* `readiness.md` written with a header block and per-item scores.
+6. **Re-run mode (from maintain).** If an `readiness.md` already exists, diff against it:
    report which items changed colour, which regressed to RED, and which new items
-   the current tier added. *Exit:* the diff is in the new `orr.md`.
+   the current tier added. *Exit:* the diff is in the new `readiness.md`.
 
 ## Routing
 
@@ -82,8 +81,8 @@ Each gap routes to the skill that owns the fix. Full table with reasons:
 
 ## Artifact
 
-Writes `.aws-sdlc/orr.md` from [assets/orr-template.md](assets/orr-template.md).
-`next: aws-deploy`. A blocked `orr.md` stops a production deploy.
+Writes `.aws-sdlc/readiness.md` from [assets/readiness-template.md](assets/readiness-template.md).
+`next: aws-deploy`. A blocked `readiness.md` stops a production deploy.
 
 ## Using the AWS MCP Server
 
@@ -93,7 +92,7 @@ This plugin configures the AWS MCP Server. Prefer its tools over the local AWS C
 - `aws___run_script`: sandboxed Python with `await call_boto3(service_name=..., operation_name=...)` (see the tool description for parameters) under the user's IAM credentials. Every call is logged in CloudTrail and carries the `aws:ViaAWSMCPService` / `aws:CalledViaAWSMCP` condition keys, so agent actions stay auditable.
 - `aws___retrieve_skill(skill_name=...)`: load a routed skill that is not installed locally (pass `file="references/..."` for its reference files). When a phase routes to a skill, load it (locally or through `aws___retrieve_skill`) before acting in its domain; do not work from memory, because services launched after the model's training cutoff are where memory is wrong.
 
-Gather live evidence with read-only `aws___run_script` calls (describe/list/get only), batching related checks into one script per ORR area, and cite the API calls in each item's evidence. If the MCP server is not connected, fall back to the AWS CLI with the same read-only-by-default rule.
+Gather live evidence with read-only `aws___run_script` calls (describe/list/get only), batching related checks into one script per readiness review area, and cite the API calls in each item's evidence. If the MCP server is not connected, fall back to the AWS CLI with the same read-only-by-default rule.
 
 ## Rules
 

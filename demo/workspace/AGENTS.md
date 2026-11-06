@@ -1,7 +1,7 @@
 # Demo workspace: AWS SDLC skills
 
 This folder is a live demo of the `aws-sdlc` plugin. The only skills installed are the seven
-SDLC phase skills (aws-sdlc, aws-intent, aws-build, aws-verify, aws-orr, aws-deploy, aws-maintain).
+SDLC phase skills (aws-sdlc, aws-intent, aws-build, aws-verify, aws-readiness, aws-deploy, aws-maintain).
 Domain skills such as `aws-serverless` or `aws-lambda-web-functions` are not installed: load them
 on demand with the AWS MCP Server tool `aws___retrieve_skill` when a phase routes to them.
 

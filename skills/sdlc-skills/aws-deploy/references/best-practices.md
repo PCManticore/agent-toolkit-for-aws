@@ -26,7 +26,7 @@ into production safely and reversibly. Keep it concise; defer mechanics to the r
   show itself on a slice of traffic. Match the mechanism to the compute type (see routing.md).
   https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html
 - **Wire automatic rollback to an alarm.** The fastest rollback needs no human. Tie the deployment to
-  the alarms the ORR confirmed exist.
+  the alarms the readiness review confirmed exist.
   https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-rollback-and-redeploy.html
 
 ## Rollback plan (written before the deploy)

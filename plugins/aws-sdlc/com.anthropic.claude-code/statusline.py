@@ -4,7 +4,7 @@
 Shows the lifecycle with each phase's state, read from the .aws-sdlc/ artifacts in
 the project, plus what to type next:
 
-  AWS SDLC  ✓ intent ─ ✓ build ─ ● verify ─ ○ orr ─ ○ deploy ─ ○ maintain   next ▸ "verify it"
+  AWS SDLC  ✓ intent ─ ✓ build ─ ● verify ─ ○ readiness ─ ○ deploy ─ ○ maintain   next ▸ "verify it"
 
 Configure in .claude/settings.json:
   "statusLine": {"type": "command", "command": "python3 /path/to/statusline.py"}
@@ -20,7 +20,7 @@ PHASES = [
     ("intent", "intent.md", "describe what you want to build"),
     ("build", "build.md", "build it"),
     ("verify", "verify-report.md", "verify it before we ship"),
-    ("orr", "orr.md", "are we ready for production?"),
+    ("readiness", "readiness.md", "are we ready for production?"),
     ("deploy", "deploy-record.md", "ship it to production"),
     ("maintain", "maintain-log.md", "how is it doing in production?"),
 ]
@@ -49,9 +49,9 @@ def main() -> None:
     # Current phase: the first one not done; maintain once deployed.
     current = next((i for i, s in enumerate(states) if s in ("", "draft")), len(PHASES) - 1)
     hint = PHASES[current][2]
-    orr_blocked = states[3] == "blocked"
-    if orr_blocked:
-        current, hint = 3, "fix the ORR blockers and re-run the review"
+    readiness_blocked = states[3] == "blocked"
+    if readiness_blocked:
+        current, hint = 3, "fix the readiness review blockers and re-run the review"
     elif states[1] and states[2] in ("fail", "failed"):
         current, hint = 1, "fix the verify failures, then verify again"
 
@@ -59,7 +59,7 @@ def main() -> None:
     for i, (label, _, _) in enumerate(PHASES):
         state = states[i]
         if i == current:
-            mark = f"{RED}✗" if (i == 3 and orr_blocked) else f"{ORANGE}{BOLD}●"
+            mark = f"{RED}✗" if (i == 3 and readiness_blocked) else f"{ORANGE}{BOLD}●"
             parts.append(f"{mark} {label}{RESET}")
         elif state and state not in ("draft", "blocked", "fail", "failed"):
             parts.append(f"{GREEN}✓ {label}{RESET}")

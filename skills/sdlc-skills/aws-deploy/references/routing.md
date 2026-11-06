@@ -21,7 +21,7 @@ rollout, rollback, record) here.
 | ECS service deploy (blue/green, deployment circuit breaker, rolling params) | `aws-containers` | aws-core | Owns ECS/Fargate service deployment config |
 | Deploy/execution role too broad | `aws-iam` | aws-core | Owns least-privilege policy for the deploy role |
 | Alarms and dashboards to watch during and after rollout | `aws-observability` | aws-core | Owns the metrics/alarms that gate a canary |
-| Readiness missing or blocked before a prod deploy | `aws-orr` | aws-sdlc | The readiness gate this phase depends on |
+| Readiness missing or blocked before a prod deploy | `aws-readiness` | aws-sdlc | The readiness gate this phase depends on |
 
 ## Rollout strategy by compute type
 

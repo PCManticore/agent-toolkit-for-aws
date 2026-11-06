@@ -34,7 +34,7 @@ next: aws-build
 
 `prototype` | `internal` | `customer-facing` | `critical`  — **chosen: <tier>**
 
-Reason: <why this tier; read by aws-orr to scale the readiness review>
+Reason: <why this tier; read by aws-readiness to scale the readiness review>
 
 ## Candidate architectures
 
