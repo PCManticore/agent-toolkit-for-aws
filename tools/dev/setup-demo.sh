@@ -14,6 +14,7 @@
 #   ./claude-demo   ./kiro-demo   launchers (tools auto-approved, destructive commands denied)
 #   ./teardown.sh   deletes every SdlcDemo* stack and sdlc-demo* web function in us-west-2
 #   DEMO.md         the run sheet with every prompt
+#   WELCOME.txt     the how-to screen the launchers show on an interactive start
 #   .claude/commands/demo-*.md, .kiro/prompts/demo-*.md   the same prompts as slash commands
 set -euo pipefail
 
@@ -35,6 +36,7 @@ mkdir -p "$DEMO_DIR"
 cp -R "$REPO_ROOT/demo/workspace/." "$DEMO_DIR/"
 cp "$DEMO_DIR/AGENTS.md" "$DEMO_DIR/CLAUDE.md"
 cp "$REPO_ROOT/demo/README.md" "$DEMO_DIR/DEMO.md"
+cp "$REPO_ROOT/demo/WELCOME.txt" "$DEMO_DIR/WELCOME.txt"
 mkdir -p "$DEMO_DIR/.claude/commands" "$DEMO_DIR/.kiro/prompts" "$DEMO_DIR/.claude-home" "$DEMO_DIR/.kiro-home/agents" "$DEMO_DIR/.kiro-home/settings"
 for prompt in "$REPO_ROOT"/demo/prompts/*.md; do
   name="demo-$(basename "$prompt")"
@@ -88,6 +90,10 @@ cat > "$DEMO_DIR/claude-demo" <<EOF
 # Claude Code with only the aws-sdlc plugin, tools auto-approved per .claude/settings.json.
 cd "\$(dirname "\$0")"
 export PATH="$AWS_DIR:\$PATH" CLAUDE_CONFIG_DIR="$DEMO_DIR/.claude-home" AWS_REGION=us-west-2
+# Interactive start (no arguments): show how to use the plugin first.
+if [[ \$# -eq 0 && -t 1 ]]; then
+  clear; cat WELCOME.txt; read -r -p "  Press Enter to start Claude Code... " _
+fi
 exec claude --plugin-dir "$PLUGIN" "\$@"
 EOF
 cat > "$DEMO_DIR/kiro-demo" <<EOF
@@ -95,6 +101,10 @@ cat > "$DEMO_DIR/kiro-demo" <<EOF
 # Kiro CLI with only the aws-sdlc skills, all tools trusted.
 cd "\$(dirname "\$0")"
 export PATH="$AWS_DIR:\$PATH" KIRO_HOME="$DEMO_DIR/.kiro-home" AWS_REGION=us-west-2
+# Interactive start (no arguments): show how to use the plugin first.
+if [[ \$# -eq 0 && -t 1 ]]; then
+  clear; cat WELCOME.txt; read -r -p "  Press Enter to start Kiro CLI... " _
+fi
 exec kiro-cli chat --agent aws-sdlc-demo --trust-all-tools "\$@"
 EOF
 cat > "$DEMO_DIR/teardown.sh" <<EOF

@@ -1,0 +1,38 @@
+
+  ╭──────────────────────────────────────────────────────────────────────────╮
+  │  Agent Toolkit for AWS — SDLC plugin (aws-sdlc)                          │
+  ╰──────────────────────────────────────────────────────────────────────────╯
+
+  Seven skills, one per phase. Describe what you want; the agent finds the phase.
+
+    aws-intent ─► aws-build ─► aws-verify ─► aws-orr ─► aws-deploy ─► aws-maintain
+        ▲                                       ▲                          │
+        └──────────── new feature ──────────────┴──── readiness drift ─────┘
+
+    aws-sdlc       where am I, what's next
+    aws-intent     requirements, options, one recommendation   → .aws-sdlc/intent.md
+    aws-build      IaC + app code + tests                       → .aws-sdlc/build.md
+    aws-verify     synth, IAM, security, tests, cost            → .aws-sdlc/verify-report.md
+    aws-orr        operational readiness review (gate)          → .aws-sdlc/orr.md
+    aws-deploy     preview, staged rollout, rollback plan       → .aws-sdlc/deploy-record.md
+    aws-maintain   triage, alarms, cost, upgrades               → .aws-sdlc/maintain-log.md
+
+  Service skills (Lambda Durable Functions, Web Functions, DynamoDB, ...) load on
+  demand from the AWS MCP Server. Every AWS call runs under your IAM, in CloudTrail.
+
+  Try the flow (slash commands, or type your own request):
+
+    /demo-help                how to use the plugin, where this project is
+    /demo-0-start             where do I start?
+    /demo-1-intent            team photo wall: upload, AI caption, moderator approval
+    /demo-2-build             CDK + Python durable function + tests
+    /demo-3-verify            dev stack, approved and rejected uploads
+    /demo-4-orr               are we operationally ready?
+    /demo-5-deploy            ship to prod (watch the ORR gate)
+    /demo-5b-fix-and-deploy   fix blockers, re-run ORR, ship
+    /demo-6-maintain          stuck photos, duplicate announcements
+
+    /demo-wf-1-intent ...     same flow for a live Q&A board on Lambda Web Functions
+
+  Or ask: "What skills do you have?"   Full run sheet: DEMO.md   Clean up: ./teardown.sh
+
