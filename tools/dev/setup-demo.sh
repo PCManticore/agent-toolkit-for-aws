@@ -117,7 +117,8 @@ exec kiro-cli chat --agent aws-sdlc-demo --trust-all-tools "\$@"
 EOF
 cat > "$DEMO_DIR/teardown.sh" <<EOF
 #!/usr/bin/env bash
-# Delete everything the demo created in us-west-2: SdlcDemo* stacks and sdlc-demo* web functions.
+# Delete everything the demo created in us-west-2: SdlcDemo* stacks, sdlc-demo* web functions and their
+# awscli-lambdaweb-sdlc-demo* roles. The shared lambda-web code bucket is left in place.
 set -uo pipefail
 export PATH="$AWS_DIR:\$PATH" AWS_REGION=us-west-2
 for stack in \$(aws cloudformation list-stacks --query "StackSummaries[?starts_with(StackName,'SdlcDemo') && StackStatus!='DELETE_COMPLETE'].StackName" --output text); do
@@ -125,6 +126,14 @@ for stack in \$(aws cloudformation list-stacks --query "StackSummaries[?starts_w
 done
 for fn in \$(aws lambda-web list-web-functions --query "functions[?starts_with(functionName,'sdlc-demo')].functionName" --output text 2>/dev/null); do
   echo "Deleting web function \$fn"; aws lambda-web delete-web-function --function-name "\$fn"
+done
+# IAM roles that \`aws lambda-web deploy\` created for demo functions (awscli-lambdaweb-sdlc-demo*).
+for role in \$(aws iam list-roles --query "Roles[?starts_with(RoleName,'awscli-lambdaweb-sdlc-demo')].RoleName" --output text); do
+  for arn in \$(aws iam list-attached-role-policies --role-name "\$role" --query 'AttachedPolicies[].PolicyArn' --output text); do
+    aws iam detach-role-policy --role-name "\$role" --policy-arn "\$arn"; done
+  for pol in \$(aws iam list-role-policies --role-name "\$role" --query 'PolicyNames' --output text); do
+    aws iam delete-role-policy --role-name "\$role" --policy-name "\$pol"; done
+  echo "Deleting role \$role"; aws iam delete-role --role-name "\$role"
 done
 for stack in \$(aws cloudformation list-stacks --query "StackSummaries[?starts_with(StackName,'SdlcDemo') && StackStatus=='DELETE_IN_PROGRESS'].StackName" --output text); do
   aws cloudformation wait stack-delete-complete --stack-name "\$stack" && echo "Deleted \$stack"

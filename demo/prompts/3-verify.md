@@ -1,4 +1,4 @@
 ---
-description: "Durable Functions flow, step 3 (verify): dev stack, approved and rejected uploads"
+description: "Step 3 (verify): local checks only, no dev stack"
 ---
-Verify it before we ship. Deploy a dev copy as stack SdlcDemoPhotos-dev in us-west-2 and run two uploads end to end: one the moderator approves, and one nobody approves so it is rejected. Show me where each execution checkpointed.
+Verify it before we ship. Keep it local: run it on port 8787, check the stream, check the input validation, and check the IAM permissions it will need are least privilege. Don't deploy a dev stack.

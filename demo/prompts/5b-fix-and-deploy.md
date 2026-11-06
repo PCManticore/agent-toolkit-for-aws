@@ -1,4 +1,4 @@
 ---
-description: "Durable Functions flow, step 5b: fix readiness review blockers, re-run the readiness review, deploy"
+description: "Step 5b: fix the readiness blockers and deploy"
 ---
-Fix the RED items from the readiness review, re-run the readiness review, and if it passes deploy to production as stack SdlcDemoPhotos with a rollback plan.
+Fix the RED items from the readiness review, re-run the review, and if it passes deploy it. Give me the URL.

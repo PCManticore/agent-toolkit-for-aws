@@ -1,4 +1,4 @@
 ---
-description: "Durable Functions flow, step 5 (deploy): ship to prod (expect the readiness review gate)"
+description: "Step 5 (deploy): ship it (expect the readiness gate)"
 ---
-Ship it to production as stack SdlcDemoPhotos.
+Ship it.

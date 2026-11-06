@@ -49,12 +49,12 @@ loaded on demand from the AWS MCP Server with `retrieve_skill`. Full run sheet: 
 
 | Phase | Prompt |
 |---|---|
-| intent | *I want to build a photo wall for our team. Someone uploads a photo, we make a thumbnail, have AI write a caption, then wait up to 10 minutes for a moderator to approve it, otherwise reject it. Approved photos are posted and the team is notified once. Python, us-west-2, under $10/month.* |
-| build | *Build it. CDK in TypeScript, Python function code, stack SdlcDemoPhotos, tag project=sdlc-demo, nothing retained on delete. Add unit tests; don't deploy yet.* |
-| verify | *Verify it before we ship. Deploy a dev copy and run an approved upload and a rejected upload end to end.* |
-| readiness | *We open this to the whole team next week. Are we operationally ready?* |
-| deploy | *Ship it to production as stack SdlcDemoPhotos.* (refused while the readiness review is blocked) |
-| maintain | *Some photos have been waiting for an hour and people say the same photo was announced twice. Triage it.* |
+| intent | *I want a tiny web page where someone types the name of an AWS service and gets a short plain-English explanation that streams in word by word. Node.js, no database, no login, us-west-2, a few dollars a month. It's a prototype.* |
+| build | *Build it as small as possible: one index.js with Express, no infrastructure-as-code. Run it locally on port 8787. Don't deploy yet.* |
+| verify | *Verify it before we ship. Keep it local and check the IAM permissions are least privilege.* |
+| readiness | *We'll share the link with the team this afternoon. Are we ready?* |
+| deploy | *Ship it.* (refused while the readiness review is blocked) |
+| maintain | *People say some answers stop halfway through. Triage it.* |
 
 Plain Claude Code without the demo workspace: `claude --plugin-dir plugins/aws-sdlc`, or
 `/plugin marketplace add PCManticore/agent-toolkit-for-aws` then `/plugin install aws-sdlc@agent-toolkit-for-aws`.

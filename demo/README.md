@@ -1,97 +1,87 @@
 # Demo: the AWS SDLC skills, from intent to maintain
 
-A 5–8 minute live demo. One agent session takes a new workload from an idea to production by walking
-the SDLC phases: **intent → build → verify → readiness review → deploy → maintain**. Two ready-made flows:
+One agent session takes a new app from an idea to a public URL by walking the SDLC phases:
+**intent → build → verify → readiness → deploy → maintain**.
 
-- **Flow A (main): a team photo wall on Lambda Durable Functions.** Multi-step, retries, a 10-minute
-  wait for a moderator, and a hard "never post or announce twice" rule.
-- **Flow B (alternative): Pulse, a live Q&A board for events on Lambda Web Functions** (launched
-  October 2026). The audience votes from their phones while the projector re-ranks questions live.
+- **Flow A (main, fast): Explainer on Lambda Web Functions.** A one-page app: type the name of an AWS
+  service and a plain-English explanation streams in word by word from Amazon Bedrock. One `index.js`,
+  no database, no infrastructure-as-code, deployed with a single `aws lambda-web deploy`. Lambda Web
+  Functions launched in October 2026, so no model has training data on them.
+- **Flow B (optional, longer): team photo wall on Lambda Durable Functions.** Multi-step workflow with a
+  moderator wait and a "never post twice" rule. It uses CDK and real stack deploys, so it takes much
+  longer. Record it in advance if you want it.
+
+## Why Flow A is fast
+
+- No CDK project, no `npm install` of a toolchain: build writes one file and a `package.json`.
+- Verify runs locally on port 8787 rather than deploying a dev stack.
+- The intent prompt says "prototype", so the readiness review runs the short prototype checklist.
+- Deploy is one command, and the first deploy creates the function, role, code bucket and endpoint.
 
 ## What the audience should notice
 
-1. **Only seven skills are installed**, one per SDLC phase. The agent starts from where you are in the
-   lifecycle, not from a list of services.
-2. **Service depth comes from the AWS MCP Server on demand.** Intent routes to `aws-serverless`, which
-   picks Durable Functions (or Web Functions). Build then pulls that service's skill with
-   `retrieve_skill`. These services are newer than the model's training data, so without the skill
-   the agent would guess.
-3. **Every phase leaves an artifact** in `.aws-sdlc/` that the next phase reads
-   (`intent.md`, `build.md`, `verify-report.md`, `readiness.md`, `deploy-record.md`, `maintain-log.md`).
-4. **The readiness review is a gate.** `aws-deploy` refuses to ship to production while the readiness review has a
-   RED item, then ships once the items are fixed.
-5. **Every AWS call goes through the AWS MCP Server** under your own IAM, so it is logged in CloudTrail
-   and carries the `aws:ViaAWSMCPService` condition key.
+1. **Only seven skills are installed**, one per phase. Service depth (`aws-serverless`,
+   `aws-lambda-web-functions`, `amazon-bedrock`) comes from the AWS MCP Server through `retrieve_skill`
+   when a phase needs it.
+2. **The agent picks the service.** Nothing in the intent prompt names Lambda, Web Functions or Bedrock.
+3. **Security shows up without being asked:** a public link that calls Bedrock needs input limits, rate
+   limiting and a budget, and the execution role gets only `bedrock:InvokeModelWithResponseStream` on one
+   model.
+4. **The readiness review is a gate.** "Ship it" is refused while the review has a RED item.
+5. **Every AWS call goes through the AWS MCP Server** under your IAM, logged in CloudTrail.
 
 ## Setup (once, before the demo)
 
 ```bash
-tools/dev/setup-demo.sh /path/to/demo-run     # prints the commands below
+tools/dev/setup-demo.sh /path/to/demo-run
 cd /path/to/demo-run
 ./claude-demo      # Claude Code: only the aws-sdlc skills, tools auto-approved
-./kiro-demo        # or Kiro CLI: only the aws-sdlc skills, all tools trusted
+./kiro-demo        # or Kiro CLI
 ```
 
-- **Isolation.** Claude Code runs with its own config dir and Kiro CLI with its own `KIRO_HOME`, so none
-  of your personal skills, plugins or steering files load. Check by asking *What skills do you have?*:
-  expect `aws-sdlc`, `aws-intent`, `aws-build`, `aws-verify`, `aws-readiness`, `aws-deploy`, `aws-maintain`.
-- **Auto-accept.** Claude Code uses the workspace `.claude/settings.json`: edits are accepted and shell,
-  file and AWS MCP tools are pre-approved. Destructive commands (`kill`, stack deletes, `git push`) are
-  denied. Kiro runs with `--trust-all-tools`.
-- **Ports.** Local servers use port 8787. Nothing touches port 3000.
-- **AWS.** Uses your current credentials in us-west-2. Every resource is named `SdlcDemo*` and tagged
-  `project=sdlc-demo`.
+- Only the seven SDLC skills load; your personal skills and plugins don't. Check with *What skills do you have?*
+- Claude Code auto-approves edits, shell, file and AWS MCP tools; destructive commands are denied.
+- Local servers use port 8787. Nothing touches port 3000.
+- Needs Bedrock model access in us-west-2 (a Claude Haiku inference profile is enough).
 
-`./claude-demo` and `./kiro-demo` open with an intro screen (`welcome.sh`): each phase and the AWS
-practices it applies, plus what the AWS MCP Server and Agent Toolkit add. Press Enter to start the agent.
-Inside Claude Code the status bar shows the lifecycle (✓ done, ● current, ✗ blocked) and what to say
-next, and every phase reply ends with a `Next →` line, so you can move phase to phase without leaving
-the agent. Inside a session, `/demo-help` asks the
-agent to explain the plugin and where the project is in the lifecycle.
+Every prompt is also a slash command in both agents.
 
-Every prompt below is also a slash command in both agents. Type `/demo-1-intent` instead of pasting.
+## Flow A: Explainer on Lambda Web Functions
 
-## Flow A: team photo wall on Lambda Durable Functions
-
-| # | Say | Type (slash command and prompt) | Expect |
-|---|---|---|---|
-| 0 | "Seven skills, one per phase." | `/demo-0-start`: *I want to build something new on AWS. Where do I start, and what does the lifecycle look like?* | `aws-sdlc` shows the lifecycle map and points to intent |
-| 1 | "I describe the problem. I don't name a service." | `/demo-1-intent`: *I want to build a photo wall for our team. Someone uploads a photo, we make a thumbnail, have AI write a short caption, then wait for a moderator to approve it (up to 10 minutes, otherwise it is rejected and the uploader is told). Approved photos go on the wall and the team gets one notification. Any step can fail and retry, but a photo must never be posted twice or announced twice. About 200 photos a day, Python team, us-west-2, budget under $10/month. Pick the recommendation yourself; I accept it.* | `aws-intent` pulls `aws-serverless` from the MCP server, compares **Durable Functions** with Step Functions, and recommends one with reasons. `intent.md` has requirements, options, cost and doc sources |
-| 2 | "Now it pulls the skill for the service it picked." | `/demo-2-build`: *Build it. Use CDK in TypeScript for the infrastructure and Python for the function code, stack name SdlcDemoPhotos, tag every resource project=sdlc-demo, and nothing retained on delete. Fake the moderator so a test event controls whether the photo is approved. Add unit tests, make sure the stack synthesizes, and don't deploy yet.* | `aws-build` retrieves `aws-lambda-durable-functions`, writes the handler with steps and a wait, an idempotency key on the post and the notification, CDK and tests. Writes `build.md` |
-| 3 | "Verify is evidence, not opinion." | `/demo-3-verify`: *Verify it before we ship. Deploy a dev copy as stack SdlcDemoPhotos-dev in us-west-2 and run two uploads end to end: one the moderator approves, and one nobody approves so it is rejected. Show me where each execution checkpointed.* | PASS/FAIL/SKIPPED per check with the command that proved it. Execution history shows completed steps and the wait |
-| 4 | "Would you open this to everyone?" | `/demo-4-readiness`: *We open this to the whole team next week. Are we operationally ready? Check the dev stack read-only. Owner is the platform team; on-call is their pager rotation; there are no runbooks yet.* | `aws-readiness` checks the account read-only through `run_script`. Expect RED items such as no alarms or runbooks, so `readiness.md` is `blocked` |
-| 5 | "Watch the gate." | `/demo-5-deploy`: *Ship it to production as stack SdlcDemoPhotos.* | `aws-deploy` refuses: the readiness review is blocked |
-| 5b | "Fix, review again, ship." | `/demo-5b-fix-and-deploy`: *Fix the RED items from the readiness review, re-run the readiness review, and if it passes deploy to production as stack SdlcDemoPhotos with a rollback plan.* | Alarms and runbooks added, readiness review passes, change set previewed, deploy, smoke check, `deploy-record.md` |
-| 6 | "Day 2." | `/demo-6-maintain`: *Some photos have been waiting for an hour and people say the same photo was announced twice. Triage it.* | `aws-maintain` reads metrics, logs and execution history through the MCP server, checks the waits and the idempotency keys, proposes a fix and logs it in `maintain-log.md` |
-
-## Flow B: Pulse on Lambda Web Functions
-
-Same phases, different app. Use the `wf-` commands.
-
-| # | Type | Expect |
+| # | Type (slash command and prompt) | Expect |
 |---|---|---|
-| 1 | `/demo-wf-1-intent`: *I want to build Pulse, a live Q&A board for our company events. People open a link on their phone, post a question and upvote other questions. The big screen shows the top questions re-ranking live as votes come in, and a "Summarize" button streams an AI summary of what people are asking, token by token. Expect about 300 people for one hour, a public link with no login, Node.js, us-west-2, budget a few dollars. Pick the recommendation yourself; I accept it.* | Routes to **Web Functions** (Node.js server plus server-sent events), DynamoDB and Bedrock. Names the abuse limits a public link needs |
-| 2 | `/demo-wf-2-build`: *Build it. Use CDK in TypeScript, stack name SdlcDemoPulse, tag every resource project=sdlc-demo, and nothing retained on delete. Make the UI look good on a phone and on a projector. Run it locally on port 8787 to check it works, make sure the stack synthesizes, and don't deploy yet.* | Retrieves `aws-lambda-web-functions`, writes an Express app and CDK, runs it locally on 8787 |
-| 3 | `/demo-wf-3-verify`: *Verify it before we ship. Deploy a dev copy as stack SdlcDemoPulse-dev in us-west-2 for the integration tests, and give me its URL.* | Dev URL to open on screen |
-| 4 | `/demo-wf-4-readiness`: *We go live at our next company event with about 300 people on a public link. Are we operationally ready? Check the dev stack read-only. Owner is the demo team; there is no on-call rotation.* | RED items such as no alarms or no rate limit |
-| 5 | `/demo-wf-5-deploy`, then `/demo-wf-5b-fix-and-deploy` | Gate refuses, then ships and returns a URL for a QR code. Let the room vote |
-| 6 | `/demo-wf-6-maintain`: *People in the room say Pulse got slow and some votes don't show up. Triage it.* | Routes to the Web Functions concurrency and troubleshooting references |
+| 1 | `/demo-1-intent`: *I want a tiny web page where someone types the name of an AWS service and gets a short plain-English explanation that streams in word by word, like a chat. Node.js, one page, no database, no login, a few dozen people from our team, us-west-2, budget a few dollars a month. It's a prototype, so keep it as small as possible. Pick the recommendation yourself; I accept it.* | Pulls `aws-serverless`, which picks **Lambda Web Functions** (Node.js server, response streaming, global HTTPS URL, scales to zero) plus **Bedrock** streaming. Tier `prototype`. `intent.md` |
+| 2 | `/demo-2-build`: *Build it as small as possible: one index.js with Express and a single HTML page, no infrastructure-as-code. Use a function name starting with sdlc-demo. Run it locally on port 8787 and check that an explanation streams. Don't deploy yet.* | Pulls `aws-lambda-web-functions`. Writes `index.js` (server-sent events from Bedrock ConverseStream, `helmet`, input length limit), runs it on 8787. `build.md` |
+| 3 | `/demo-3-verify`: *Verify it before we ship. Keep it local: run it on port 8787, check the stream, check the input validation, and check the IAM permissions it will need are least privilege. Don't deploy a dev stack.* | PASS/FAIL/SKIPPED per check; IAM policy validated through `run_script`. `verify-report.md` |
+| 4 | `/demo-4-readiness`: *We'll share the link with the team this afternoon. Are we ready?* | Prototype checklist. Likely RED: a public endpoint with no rate limit, no budget alert. `readiness.md` blocked |
+| 5 | `/demo-5-deploy`: *Ship it.* | `aws-deploy` refuses: the readiness review is blocked |
+| 5b | `/demo-5b-fix-and-deploy`: *Fix the RED items from the readiness review, re-run the review, and if it passes deploy it. Give me the URL.* | Adds rate limiting and a budget, review passes, `aws lambda-web deploy`, smoke check with curl, URL. `deploy-record.md` |
+| 6 | `/demo-6-maintain`: *People say some answers stop halfway through. Triage it.* | Reads logs through the MCP server; the Web Functions skill points at the request timeout covering the whole stream, not just the first byte |
 
-## Timing
+For a 3-minute video: record the whole flow once, then cut the waiting. Steps 1, 5 and 5b carry the story;
+show 2–4 as short clips of the status bar and the artifacts.
 
-Build and verify take several minutes each with real deploys. For a 5-minute slot, run intent live,
-then switch to a workspace prepared earlier (same flow, already at `readiness.md`) and run 5 → 5b → 6 live.
-To prepare it, run the flow once in a second demo workspace the day before.
+## Flow B: team photo wall on Lambda Durable Functions (optional, longer)
+
+Same phases with the `df-` commands. Uses CDK and real stack deploys; allow 30+ minutes end to end.
+
+| # | Type |
+|---|---|
+| 1 | `/demo-df-1-intent`: *I want to build a photo wall for our team. Someone uploads a photo, we make a thumbnail, have AI write a short caption, then wait for a moderator to approve it (up to 10 minutes, otherwise it is rejected and the uploader is told). Approved photos go on the wall and the team gets one notification. Any step can fail and retry, but a photo must never be posted twice or announced twice. About 200 photos a day, Python team, us-west-2, budget under $10/month. Pick the recommendation yourself; I accept it.* |
+| 2 | `/demo-df-2-build`: CDK in TypeScript, Python durable function, a fake moderator, unit tests |
+| 3 | `/demo-df-3-verify`: dev stack, one approved and one rejected upload, with checkpoints |
+| 4 | `/demo-df-4-readiness`: *We open this to the whole team next week. Are we operationally ready?* |
+| 5 | `/demo-df-5-deploy`, then `/demo-df-5b-fix-and-deploy` |
+| 6 | `/demo-df-6-maintain`: *Some photos have been waiting for an hour and people say the same photo was announced twice. Triage it.* |
 
 ## Backup prompts
 
-- If intent does not pick the expected service, add *"Use the newest Lambda option for this."*
+- If intent doesn't pick Web Functions: add *"Use the newest Lambda option for a Node.js web server."*
 - *What skills do you have available?* shows the isolation.
 - *Which AWS MCP Server tools did you use in this session, and what did each one do?*
-- *Show me the .aws-sdlc artifacts and what each phase wrote.*
 
 ## Teardown
 
 ```bash
-./teardown.sh      # deletes SdlcDemo* stacks and sdlc-demo* web functions in us-west-2
+./teardown.sh      # deletes SdlcDemo* stacks, sdlc-demo* web functions and their roles in us-west-2
 ```

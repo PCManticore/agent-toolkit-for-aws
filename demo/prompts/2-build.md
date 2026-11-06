@@ -1,4 +1,4 @@
 ---
-description: "Durable Functions flow, step 2 (build): CDK + Python durable function, unit tests"
+description: "Step 2 (build): one Express file, run locally on port 8787"
 ---
-Build it. Use CDK in TypeScript for the infrastructure and Python for the function code, stack name SdlcDemoPhotos, tag every resource project=sdlc-demo, and nothing retained on delete. Fake the moderator so a test event controls whether the photo is approved. Add unit tests, make sure the stack synthesizes, and don't deploy yet.
+Build it as small as possible: one index.js with Express and a single HTML page, no infrastructure-as-code. Use a function name starting with sdlc-demo. Run it locally on port 8787 and check that an explanation streams. Don't deploy yet.
